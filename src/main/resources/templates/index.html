@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banking Application - Home</title>
+</head>
+<body>
+
+<header>
+  <h1>Welcome to the Banking Application</h1>
+</header>
+
+<main>
+  <h2>Navigation</h2>
+  <nav>
+    <ul>
+      <li><a th:href="@{/accounts/create}">Create Account</a></li>
+      <li><a th:href="@{/accounts}">View All Accounts</a></li>
+      <li><a th:href="@{/transactions}">View Transaction History</a></li>
+      <li><a th:href="@{/statements}">Generate Account Statement</a></li>
+    </ul>
+  </nav>
+</main>
+
+<footer>
+  <p>&copy; 2024 Banking Application</p>
+</footer>
+
+</body>
+</html>

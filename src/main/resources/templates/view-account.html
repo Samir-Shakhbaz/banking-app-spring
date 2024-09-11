@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Account</title>
+</head>
+<body>
+<header th:replace="fragments :: navigation"></header>
+
+    <h1>Banking Account Details</h1>
+    <nav>
+        <a th:href="@{/}">Back to Index</a>
+        <a th:href="@{/accounts}">Back to All Accounts</a>
+        <a th:href="@{|/accounts/${account.accountNumber}/statement?period=monthly|}">Generate Monthly Account Statement</a>
+        <a th:href="@{|/accounts/${account.accountNumber}/statement?period=yearly|}">Generate Yearly Account Statement</a>
+
+
+    </nav>
+</header>
+<main>
+    <h2>Account Information</h2>
+    <p><strong>Account ID:</strong> <span th:text="${account.id}"></span></p>
+    <p><strong>Account Name:</strong> <span th:text="${account.name}"></span></p>
+    <p><strong>Account Number:</strong> <span th:text="${account.accountNumber}"></span></p>
+    <p><strong>Balance:</strong> <span th:text="${account.balance}"></span></p>
+    <p><strong>Locked:</strong> <span th:text="${account.locked}"></span></p>
+
+    <h3>Actions</h3>
+    <form th:action="@{|/accounts/${account.id}/deposit|}" method="post">
+        <label for="depositAmount">Deposit Amount:</label>
+        <input type="number" id="depositAmount" name="amount" step="0.01" required>
+        <button type="submit">Deposit</button>
+    </form>
+
+    <form th:action="@{|/accounts/${account.id}/withdraw|}" method="post">
+        <label for="withdrawAmount">Withdraw Amount:</label>
+        <input type="number" id="withdrawAmount" name="amount" step="0.01" required>
+        <button type="submit">Withdraw</button>
+
+        <p th:if="${message}" th:text="${message}"></p>
+    </form>
+
+
+    <a th:href="@{|/accounts/delete/${account.id}|}" th:onclick="return confirm('Are you sure?');">Delete Account</a>
+
+    <h3>Transaction History</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="transaction : ${account.transactionHistory}">
+            <td th:text="${transaction.type}"></td>
+            <td th:text="${transaction.amount}"></td>
+            <td th:text="${transaction.date}"></td>
+            <td th:text="${transaction.targetAccount != null ? 'Transfer to Account: ' + transaction.targetAccount : ''}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <p th:if="${#lists.isEmpty(account.transactionHistory)}">No transactions available.</p>
+</main>
+
+<footer>
+    <p>&copy; 2024 Banking System</p>
+</footer>
+</body>
+</html>

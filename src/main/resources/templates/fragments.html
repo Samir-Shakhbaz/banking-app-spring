@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <title>Banking App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body style="background-color:#EDF1FF">
+
+<!-- Fragment for Navigation Bar -->
+<div th:fragment="navigation">
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <ul class="nav navbar-nav">
+        <li class="active"><a th:href="@{/}">Home</a></li>
+        <li><a th:href="@{/accounts/create}">Create Account</a></li>
+        <li><a th:href="@{/accounts}">View All Accounts</a></li>
+        <li><a th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transactions</a></li>
+        <li><a th:href="@{/statements}">Generate Statement</a></li>
+        <li><a th:href="@{/login}">Log In</a></li>
+        <li><a th:href="@{/logout}">Log Out</a></li>
+        <li><a th:href="@{/about}">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+
+</body>
+</html>

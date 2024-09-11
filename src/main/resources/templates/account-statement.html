@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Account Statement</title>
+</head>
+<body>
+<h1>Account Statement</h1>
+
+<table>
+  <tr>
+    <td><strong>Account Holder:</strong></td>
+    <td th:text="${account.name}"></td>
+  </tr>
+  <tr>
+    <td><strong>Account Number:</strong></td>
+    <td th:text="${account.accountNumber}"></td>
+  </tr>
+  <tr>
+    <td><strong>Statement Period:</strong></td>
+    <td th:text="${period}"></td>
+  </tr>
+</table>
+
+<h2>Transactions</h2>
+<table>
+  <thead>
+  <tr>
+    <th>Date</th>
+    <th>Type</th>
+    <th>Amount</th>
+    <th>Target Account</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="transaction : ${account.transactionHistory}">
+    <td th:text="${transaction.date}"></td>
+    <td th:text="${transaction.type}"></td>
+    <td th:text="${transaction.amount}"></td>
+    <td th:text="${transaction.targetAccount}"></td>
+  </tr>
+  </tbody>
+</table>
+
+<h3>Current Balance: <span th:text="${account.balance}"></span></h3>
+
+<a th:href="@{|/accounts/${account.accountNumber}|}">Back to Account Details</a>
+</body>
+</html>

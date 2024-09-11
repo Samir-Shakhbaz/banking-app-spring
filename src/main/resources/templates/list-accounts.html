@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Accounts</title>
+</head>
+<body>
+<header>
+  <h1>Banking Accounts</h1>
+  <nav>
+    <a th:href="@{/accounts/create}">Create Account</a>
+  </nav>
+</header>
+<main>
+  <h2>Account List</h2>
+  <table>
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Account Number</th>
+      <th>Balance</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="account : ${accounts}">
+      <td th:text="${account.id}"></td>
+      <td th:text="${account.name}"></td>
+      <td th:text="${account.accountNumber}"></td>
+      <td th:text="${account.balance}"></td>
+      <td>
+        <a th:href="@{|/accounts/${account.id}|}">View</a>
+        <a th:href="@{|/accounts/delete/${account.id}|}" th:onclick="return confirm('Are you sure?');">Delete</a>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <p th:if="${#lists.isEmpty(accounts)}">No accounts available.</p>
+</main>
+<footer>
+  <p>&copy; 2024 Banking System</p>
+</footer>
+</body>
+</html>
