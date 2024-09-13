@@ -1,15 +1,20 @@
 package com.sash.banking_app_spring.controllers;
 
+import com.sash.banking_app_spring.client.ExchangeRateAPIClient;
+import com.sash.banking_app_spring.client.ExchangeRateResponse;
+import com.sash.banking_app_spring.client.Rate;
 import com.sash.banking_app_spring.models.BankingAccount;
 import com.sash.banking_app_spring.models.Transaction;
 import com.sash.banking_app_spring.repositories.BankingAccountRepository;
 import com.sash.banking_app_spring.services.BankingAccountService;
+//import com.sash.banking_app_spring.client.ExchangeRateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/accounts")
@@ -21,10 +26,20 @@ public class BankingAccountController {
     @Autowired
     private BankingAccountRepository bankingAccountRepository;
 
-    @GetMapping("/")
-    public String showIndexPage() {
-            return "index";
-        }
+//    @Autowired
+//    private ExchangeRateService exchangeRateService;
+
+//    @Autowired
+//    private APIExchangeRateService apiExchangeRateService;
+
+//    @GetMapping("/")
+//    public String showIndexPage() {
+//            return "index";
+//        }
+
+    @Autowired
+    ExchangeRateAPIClient exchangeRateAPIClient;
+
 
     @GetMapping
     public String listAllAccounts(Model model) {

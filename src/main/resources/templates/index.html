@@ -21,6 +21,23 @@
       <li><a th:href="@{/statements}">Generate Account Statement</a></li>
     </ul>
   </nav>
+
+  <h2>Exchange Rates</h2>
+  <ul>
+    <li th:if="${exchangeRates == null || exchangeRates.isEmpty()}">
+      No exchange rates available at the moment.
+    </li>
+    <li th:each="rate : ${exchangeRates}">
+      <span th:text="${rate.currency} + ': ' + ${rate.rate}"></span>
+    </li>
+  </ul>
+<!--  <h3 style="color: yellow">Exchange Rates</h3> &lt;!&ndash; Title with yellow color &ndash;&gt;-->
+<!--  <ul>-->
+<!--    <li th:each="rate : ${exchangeRates}">-->
+<!--      <span style="color: yellow" th:text="${rate.key} + ': ' + ${rate.value}"></span> &lt;!&ndash; Yellow colored exchange rate text &ndash;&gt;-->
+<!--    </li>-->
+<!--  </ul>-->
+
 </main>
 
 <footer>
