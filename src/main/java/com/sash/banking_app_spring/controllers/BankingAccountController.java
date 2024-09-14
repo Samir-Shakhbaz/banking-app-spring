@@ -4,6 +4,8 @@ import com.sash.banking_app_spring.client.ExchangeRateAPIClient;
 import com.sash.banking_app_spring.client.ExchangeRateResponse;
 import com.sash.banking_app_spring.client.Rate;
 import com.sash.banking_app_spring.models.BankingAccount;
+import com.sash.banking_app_spring.models.CheckingAccount;
+import com.sash.banking_app_spring.models.SavingsAccount;
 import com.sash.banking_app_spring.models.Transaction;
 import com.sash.banking_app_spring.repositories.BankingAccountRepository;
 import com.sash.banking_app_spring.services.BankingAccountService;
@@ -63,10 +65,31 @@ public class BankingAccountController {
     }
 
 
+//    @GetMapping("/create")
+//    public String showCreateAccountForm(Model model) {
+//        model.addAttribute("account", new BankingAccount());
+//        return "create-account";
+//    }
+
     @GetMapping("/create")
     public String showCreateAccountForm(Model model) {
-        model.addAttribute("account", new BankingAccount());
+        model.addAttribute("checkingAccount", new CheckingAccount());
+        model.addAttribute("savingsAccount", new SavingsAccount());
         return "create-account";
+    }
+
+    @PostMapping("/create/checking")
+    public String createCheckingAccount(@ModelAttribute CheckingAccount checkingAccount) {
+        bankingAccountService.createCheckingAccount(checkingAccount.getName(), checkingAccount.getBalance(),
+                checkingAccount.getAccountNumber(), checkingAccount.getOverdraftLimit());
+        return "redirect:/accounts";
+    }
+
+    @PostMapping("/create/savings")
+    public String createSavingsAccount(@ModelAttribute SavingsAccount savingsAccount) {
+        bankingAccountService.createSavingsAccount(savingsAccount.getName(), savingsAccount.getBalance(),
+                savingsAccount.getAccountNumber(), savingsAccount.getInterestRate());
+        return "redirect:/accounts";
     }
 
     @PostMapping("/create")
@@ -136,14 +159,30 @@ public class BankingAccountController {
         return "generate-statement";
     }
 
+//    @GetMapping("/{accountNumber}/transactions")
+//    public String viewTransactionHistory(@PathVariable Long accountNumber, Model model) {
+//        List<Transaction> transactionHistory = bankingAccountService.getTransactionHistory(accountNumber);
+//        BankingAccount account = bankingAccountService.getAccountByAccountNumber(accountNumber);
+//        model.addAttribute("account", account);
+//        model.addAttribute("transactionHistory", transactionHistory);
+//        return "transaction-history";
+//    }
+
     @GetMapping("/{accountNumber}/transactions")
     public String viewTransactionHistory(@PathVariable Long accountNumber, Model model) {
-        // Fetch the transaction history for the account
-        List<Transaction> transactionHistory = bankingAccountService.getTransactionHistory(accountNumber);
         BankingAccount account = bankingAccountService.getAccountByAccountNumber(accountNumber);
-        model.addAttribute("account", account);
-        model.addAttribute("transactionHistory", transactionHistory);
+
+        if (account != null) {
+            List<Transaction> transactionHistory = account.getTransactionHistory();
+            model.addAttribute("account", account);
+            model.addAttribute("transactionHistory", transactionHistory);
+        } else {
+            model.addAttribute("errorMessage", "Account not found.");
+        }
+
         return "transaction-history";
     }
+
+
 
 }

@@ -1,6 +1,8 @@
 package com.sash.banking_app_spring.services;
 
 import com.sash.banking_app_spring.models.BankingAccount;
+import com.sash.banking_app_spring.models.CheckingAccount;
+import com.sash.banking_app_spring.models.SavingsAccount;
 import com.sash.banking_app_spring.models.Transaction;
 import com.sash.banking_app_spring.repositories.BankingAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,33 +35,83 @@ public class BankingAccountService {
         return accountOpt.orElse(null);
     }
 
+//    public BankingAccount deposit(Long accountId, double depositAmount) {
+//        Optional<BankingAccount> accountOpt = bankingAccountRepository.findById(accountId);
+//        if (accountOpt.isPresent()) {
+//            BankingAccount account = accountOpt.get();
+//            account.setBalance(account.getBalance() + depositAmount);
+//            account.getTransactionHistory().add(new Transaction("Deposit", depositAmount, LocalDateTime.now(), null));
+//            return bankingAccountRepository.save(account);
+//        }
+//        throw new RuntimeException("Account not found.");
+//    }
+//
+//    public String withdraw(Long accountId, double withdrawAmount) {
+//        Optional<BankingAccount> accountOpt = bankingAccountRepository.findById(accountId);
+//        if (accountOpt.isPresent()) {
+//            BankingAccount account = accountOpt.get();
+//            if (account.getBalance() >= withdrawAmount) {
+//                account.setBalance(account.getBalance() - withdrawAmount);
+//                account.getTransactionHistory().add(new Transaction("Withdrawal", withdrawAmount, LocalDateTime.now(), null));
+//                bankingAccountRepository.save(account);
+//                return "Withdrawal successful!";
+//            } else {
+//                return "Insufficient balance.";
+//            }
+//        }
+//        return "Account not found.";
+//    }
+
     public BankingAccount deposit(Long accountId, double depositAmount) {
-        Optional<BankingAccount> accountOpt = bankingAccountRepository.findById(accountId);
-        if (accountOpt.isPresent()) {
-            BankingAccount account = accountOpt.get();
-            account.setBalance(account.getBalance() + depositAmount);
-            account.getTransactionHistory().add(new Transaction("Deposit", depositAmount, LocalDateTime.now(), null));
-            return bankingAccountRepository.save(account);
-        }
-        throw new RuntimeException("Account not found.");
+        // Fetch the account using the ID
+        BankingAccount account = bankingAccountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found."));
+
+        // Update the balance
+        account.setBalance(account.getBalance() + depositAmount);
+
+        // Create a new Transaction object for the deposit
+        Transaction transaction = new Transaction();
+        transaction.setType("Deposit");
+        transaction.setAmount(depositAmount);
+        transaction.setDate(LocalDateTime.now());
+        transaction.setBankingAccount(account);  // Set the relationship between Transaction and BankingAccount
+
+        // Add the transaction to the account's transaction history
+        account.getTransactionHistory().add(transaction);
+
+        // Save and return the updated account
+        return bankingAccountRepository.save(account);
     }
 
+    // Withdraw logic
     public String withdraw(Long accountId, double withdrawAmount) {
-        Optional<BankingAccount> accountOpt = bankingAccountRepository.findById(accountId);
-        if (accountOpt.isPresent()) {
-            BankingAccount account = accountOpt.get();
-            if (account.getBalance() >= withdrawAmount) {
-                account.setBalance(account.getBalance() - withdrawAmount);
-                account.getTransactionHistory().add(new Transaction("Withdrawal", withdrawAmount, LocalDateTime.now(), null));
-                bankingAccountRepository.save(account);
-                return "Withdrawal successful!";
-            } else {
-                return "Insufficient balance.";
-            }
-        }
-        return "Account not found.";
-    }
+        // Fetch the account using the ID
+        BankingAccount account = bankingAccountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found."));
 
+        // Check if there are enough funds
+        if (account.getBalance() >= withdrawAmount) {
+            // Update the balance
+            account.setBalance(account.getBalance() - withdrawAmount);
+
+            // Create a new Transaction object for the withdrawal
+            Transaction transaction = new Transaction();
+            transaction.setType("Withdrawal");
+            transaction.setAmount(withdrawAmount);
+            transaction.setDate(LocalDateTime.now());
+            transaction.setBankingAccount(account);  // Set the relationship between Transaction and BankingAccount
+
+            // Add the transaction to the account's transaction history
+            account.getTransactionHistory().add(transaction);
+
+            // Save the updated account with the transaction
+            bankingAccountRepository.save(account);
+            return "Withdrawal successful!";
+        } else {
+            return "Insufficient balance.";
+        }
+    }
 
     public String transfer(Long fromAccountId, Long toAccountId, double amount) {
         Optional<BankingAccount> fromAccountOpt = bankingAccountRepository.findById(fromAccountId);
@@ -150,9 +202,33 @@ public class BankingAccountService {
     public List<Transaction> getTransactionHistory(Long accountNumber) {
         BankingAccount account = bankingAccountRepository.findByAccountNumber(accountNumber);
         if (account == null) {
-            throw new RuntimeException("Account not found");
+            throw new RuntimeException("Account not found.");
         }
-        return account.getTransactionHistory();
+        List<Transaction> transactions = account.getTransactionHistory();
+
+        System.out.println("Transaction history for account " + accountNumber + ": " + transactions);
+
+        return transactions;
+    }
+
+
+
+    public CheckingAccount createCheckingAccount(String name, double balance, Long accountNumber, double overdraftLimit) {
+        CheckingAccount account = new CheckingAccount();
+        account.setName(name);
+        account.setBalance(balance);
+        account.setAccountNumber(accountNumber);
+        account.setOverdraftLimit(overdraftLimit);
+        return bankingAccountRepository.save(account);
+    }
+
+    public SavingsAccount createSavingsAccount(String name, double balance, Long accountNumber, double interestRate) {
+        SavingsAccount account = new SavingsAccount();
+        account.setName(name);
+        account.setBalance(balance);
+        account.setAccountNumber(accountNumber);
+        account.setInterestRate(interestRate);
+        return bankingAccountRepository.save(account);
     }
 
 }

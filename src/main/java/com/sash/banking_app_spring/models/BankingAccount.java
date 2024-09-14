@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)  // here we can choose JOINED or TABLE_PER_CLASS based on design
+@DiscriminatorColumn(name = "account_type", discriminatorType = DiscriminatorType.STRING)
 @Data
-public class BankingAccount {
+public abstract class BankingAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -43,6 +43,8 @@
 
 
     <a th:href="@{|/accounts/delete/${account.id}|}" th:onclick="return confirm('Are you sure?');">Delete Account</a>
+    <a th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transaction History</a>
+
 
     <h3>Transaction History</h3>
     <table>

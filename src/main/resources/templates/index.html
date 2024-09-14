@@ -17,7 +17,7 @@
     <ul>
       <li><a th:href="@{/accounts/create}">Create Account</a></li>
       <li><a th:href="@{/accounts}">View All Accounts</a></li>
-      <li><a th:href="@{/transactions}">View Transaction History</a></li>
+      <li><a th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transaction History</a></li>
       <li><a th:href="@{/statements}">Generate Account Statement</a></li>
     </ul>
   </nav>

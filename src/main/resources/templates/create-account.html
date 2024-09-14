@@ -2,21 +2,67 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Create Account</title>
+    <title>Create Banking Account</title>
 </head>
 <body>
-<h1>Create a New Account</h1>
-<form th:action="@{/accounts/create}" th:object="${account}" method="post">
-    <label for="name">Name:</label>
-    <input type="text" id="name" th:field="*{name}" required/>
+<header>
+    <h1>Create Banking Account</h1>
+</header>
 
-    <label for="initialBalance">Initial Balance:</label>
-    <input type="number" id="initialBalance" th:field="*{balance}" required/>
+<main>
+    <h2>Create Checking Account</h2>
+    <form th:action="@{/accounts/create/checking}" method="post">
+        <label>Name:</label>
+        <input type="text" name="name" required/>
+        <label>Balance:</label>
+        <input type="number" name="balance" required/>
+        <label>Account Number:</label>
+        <input type="text" name="accountNumber" required/>
+        <label>Overdraft Limit:</label>
+        <input type="number" name="overdraftLimit" required/>
+        <button type="submit">Create Checking Account</button>
+    </form>
 
-    <label for="accountNumber">Account Number:</label>
-    <input type="number" id="accountNumber" th:field="*{accountNumber}" required/>
+    <h2>Create Savings Account</h2>
+    <form th:action="@{/accounts/create/savings}" method="post">
+        <label>Name:</label>
+        <input type="text" name="name" required/>
+        <label>Balance:</label>
+        <input type="number" name="balance" required/>
+        <label>Account Number:</label>
+        <input type="text" name="accountNumber" required/>
+        <label>Interest Rate (%):</label>
+        <input type="number" name="interestRate" step="0.01" required/>
+        <button type="submit">Create Savings Account</button>
+    </form>
+</main>
 
-    <button type="submit">Create Account</button>
-</form>
+<footer>
+    <p>&copy; 2024 Banking Application</p>
+</footer>
 </body>
 </html>
+
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Create Account</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Create a New Account</h1>-->
+<!--<form th:action="@{/accounts/create}" th:object="${account}" method="post">-->
+<!--    <label for="name">Name:</label>-->
+<!--    <input type="text" id="name" th:field="*{name}" required/>-->
+
+<!--    <label for="initialBalance">Initial Balance:</label>-->
+<!--    <input type="number" id="initialBalance" th:field="*{balance}" required/>-->
+
+<!--    <label for="accountNumber">Account Number:</label>-->
+<!--    <input type="number" id="accountNumber" th:field="*{accountNumber}" required/>-->
+
+<!--    <button type="submit">Create Account</button>-->
+<!--</form>-->
+<!--</body>-->
+<!--</html>-->
