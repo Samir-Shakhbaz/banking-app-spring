@@ -20,6 +20,7 @@ public abstract class BankingAccount {
     private double balance;
     @Column(unique = true)
     private Long accountNumber;
+    private boolean active;
     private boolean locked;
     private double totalExpenses;
     private double budget;

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:fragment="header">
   <meta charset="utf-8"/>
   <title>Banking App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,19 +10,27 @@
 </head>
 <body style="background-color:#EDF1FF">
 
-<!-- Fragment for Navigation Bar -->
+<!-- Navigation Fragment -->
 <div th:fragment="navigation">
   <nav class="navbar navbar-default">
     <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" th:href="@{/}">Banking App</a>
+      </div>
       <ul class="nav navbar-nav">
-        <li class="active"><a th:href="@{/}">Home</a></li>
-        <li><a th:href="@{/accounts/create}">Create Account</a></li>
-        <li><a th:href="@{/accounts}">View All Accounts</a></li>
-        <li><a th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transactions</a></li>
-        <li><a th:href="@{/statements}">Generate Statement</a></li>
-        <li><a th:href="@{/login}">Log In</a></li>
-        <li><a th:href="@{/logout}">Log Out</a></li>
-        <li><a th:href="@{/about}">About</a></li>
+        <li class="active"><a href="/" th:href="@{/}">Home</a></li>
+        <li><a href="/accounts/create" th:href="@{/accounts/create}">Create Account</a></li>
+        <li><a href="/accounts" th:href="@{/accounts}">View All Accounts</a></li>
+        <li><a href="/transactions" th:href="@{|/accounts/${account?.accountNumber}/transactions|}">View Transactions</a></li>
+        <li><a href="/statements" th:href="@{/statements}">Generate Statement</a></li>
+        <li><a href="/about" th:href="@{/about}">About</a></li>
+        <li><a th:href="@{/accounts/create/savings}">Create Savings Account</a></li>
+        <li><a th:href="@{/accounts/create/checking}">Create Checking Account</a></li>
+
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/login" th:href="@{/login}"><span class="glyphicon glyphicon-log-in"></span> Log In</a></li>
+        <li><a href="/logout" th:href="@{/logout}"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
       </ul>
     </div>
   </nav>

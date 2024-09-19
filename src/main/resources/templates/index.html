@@ -7,6 +7,14 @@
 </head>
 <body>
 
+<div th:replace="test-navbar.html :: navbar"></div>
+
+
+<!--<div th:replace="~{fragments3 :: navigation}"></div>-->
+<!--<div th:replace="fragments2 :: navigation"></div>-->
+
+
+
 <header>
   <h1>Welcome to the Banking Application</h1>
 </header>
@@ -17,7 +25,7 @@
     <ul>
       <li><a th:href="@{/accounts/create}">Create Account</a></li>
       <li><a th:href="@{/accounts}">View All Accounts</a></li>
-      <li><a th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transaction History</a></li>
+<!--      <li><a th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transaction History</a></li>-->
       <li><a th:href="@{/statements}">Generate Account Statement</a></li>
     </ul>
   </nav>

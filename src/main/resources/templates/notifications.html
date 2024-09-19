@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Notifications</title>
+</head>
+<body>
+<h1>Notifications for Account: <span th:text="${account.accountNumber}"></span></h1>
+<ul>
+  <li th:each="notification : ${notifications}">
+    <span th:text="${notification}"></span>
+  </li>
+</ul>
+<a th:href="@{|/accounts/${account.id}|}">Back to Account Details</a>
+</body>
+</html>

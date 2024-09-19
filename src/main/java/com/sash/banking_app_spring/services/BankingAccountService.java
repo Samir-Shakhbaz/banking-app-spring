@@ -63,49 +63,40 @@ public class BankingAccountService {
 //    }
 
     public BankingAccount deposit(Long accountId, double depositAmount) {
-        // Fetch the account using the ID
+
         BankingAccount account = bankingAccountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found."));
 
-        // Update the balance
         account.setBalance(account.getBalance() + depositAmount);
 
-        // Create a new Transaction object for the deposit
         Transaction transaction = new Transaction();
         transaction.setType("Deposit");
         transaction.setAmount(depositAmount);
         transaction.setDate(LocalDateTime.now());
         transaction.setBankingAccount(account);  // Set the relationship between Transaction and BankingAccount
 
-        // Add the transaction to the account's transaction history
         account.getTransactionHistory().add(transaction);
 
-        // Save and return the updated account
         return bankingAccountRepository.save(account);
     }
 
-    // Withdraw logic
     public String withdraw(Long accountId, double withdrawAmount) {
-        // Fetch the account using the ID
+
         BankingAccount account = bankingAccountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found."));
 
-        // Check if there are enough funds
         if (account.getBalance() >= withdrawAmount) {
-            // Update the balance
             account.setBalance(account.getBalance() - withdrawAmount);
 
-            // Create a new Transaction object for the withdrawal
+
             Transaction transaction = new Transaction();
             transaction.setType("Withdrawal");
             transaction.setAmount(withdrawAmount);
             transaction.setDate(LocalDateTime.now());
-            transaction.setBankingAccount(account);  // Set the relationship between Transaction and BankingAccount
+            transaction.setBankingAccount(account);
 
-            // Add the transaction to the account's transaction history
             account.getTransactionHistory().add(transaction);
 
-            // Save the updated account with the transaction
             bankingAccountRepository.save(account);
             return "Withdrawal successful!";
         } else {
@@ -230,5 +221,20 @@ public class BankingAccountService {
         account.setInterestRate(interestRate);
         return bankingAccountRepository.save(account);
     }
+
+    public void deactivateAccount(Long accountId) {
+        BankingAccount account = getAccountById(accountId);
+        account.setActive(false);
+        account.getNotifications().add("Account deactivated.");
+        bankingAccountRepository.save(account);
+    }
+
+
+    public void addNotification(Long accountId, String message) {
+        BankingAccount account = getAccountById(accountId);
+        account.getNotifications().add(message);
+        bankingAccountRepository.save(account);
+    }
+
 
 }

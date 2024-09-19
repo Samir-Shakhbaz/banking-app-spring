@@ -50,6 +50,11 @@ public class BankingAccountController {
         return "list-accounts";
     }
 
+    @GetMapping("/testNavbar")
+    public String testNavbar(){
+        return "test-navbar";
+    }
+
     @GetMapping("/{accountId}")
     public String showAccount(@PathVariable Long accountId, Model model) {
         BankingAccount account = bankingAccountService.getAccountById(accountId);
@@ -78,6 +83,25 @@ public class BankingAccountController {
         return "create-account";
     }
 
+    @PostMapping("/create")
+    public String createAccount(@ModelAttribute BankingAccount account, Model model) {
+        bankingAccountService.createAccount(account);
+        model.addAttribute("message", "Account created successfully!");
+        return "redirect:/accounts/" + account.getAccountNumber();
+    }
+
+    @GetMapping("/create/checking")
+    public String showCreateCheckingForm(Model model) {
+        model.addAttribute("checkingAccount", new CheckingAccount());
+        return "create-checking-account";
+    }
+
+    @GetMapping("/create/savings")
+    public String showCreateSavingsForm(Model model) {
+        model.addAttribute("savingsAccount", new SavingsAccount());
+        return "create-savings-account";
+    }
+
     @PostMapping("/create/checking")
     public String createCheckingAccount(@ModelAttribute CheckingAccount checkingAccount) {
         bankingAccountService.createCheckingAccount(checkingAccount.getName(), checkingAccount.getBalance(),
@@ -90,13 +114,6 @@ public class BankingAccountController {
         bankingAccountService.createSavingsAccount(savingsAccount.getName(), savingsAccount.getBalance(),
                 savingsAccount.getAccountNumber(), savingsAccount.getInterestRate());
         return "redirect:/accounts";
-    }
-
-    @PostMapping("/create")
-    public String createAccount(@ModelAttribute BankingAccount account, Model model) {
-        bankingAccountService.createAccount(account);
-        model.addAttribute("message", "Account created successfully!");
-        return "redirect:/accounts/" + account.getAccountNumber();
     }
 
 //    @GetMapping("/{accountNumber}")
@@ -183,6 +200,31 @@ public class BankingAccountController {
         return "transaction-history";
     }
 
+    @PostMapping("/{accountId}/deactivate")
+    public String deactivateAccount(@PathVariable Long accountId, Model model) {
+        bankingAccountService.deactivateAccount(accountId);
+        model.addAttribute("message", "Account has been deactivated.");
+        return "redirect:/accounts/" + accountId;
+    }
 
+    @GetMapping("/{accountId}/notifications")
+    public String viewNotifications(@PathVariable Long accountId, Model model) {
+        BankingAccount account = bankingAccountService.getAccountById(accountId);
+        model.addAttribute("account", account);
+        model.addAttribute("notifications", account.getNotifications());
+        return "notifications";
+    }
+
+//    @PostMapping("/create-savings")
+//    public String createSavingsAccount(@RequestParam String name, @RequestParam double initialDeposit, Long accountNumber, @RequestParam double interestRate) {
+//        bankingAccountService.createSavingsAccount(name, initialDeposit, accountNumber, interestRate);
+//        return "redirect:/accounts";
+//    }
+//
+//    @PostMapping("/create-checking")
+//    public String createCheckingAccount(@RequestParam String name, @RequestParam double initialDeposit, Long accountNumber, @RequestParam double overdraftLimit) {
+//        bankingAccountService.createCheckingAccount(name, initialDeposit, accountNumber, overdraftLimit);
+//        return "redirect:/accounts";
+//    }
 
 }
