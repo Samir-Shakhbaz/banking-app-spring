@@ -3,10 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Create Banking Account</title>
+    <div th:replace="~{test-navbar :: styles}"></div>
 </head>
 <body>
+<div th:replace="~{test-navbar.html :: navbar}"></div>
+
 <header>
     <h1>Create Banking Account</h1>
+
+
 </header>
 
 <main>
@@ -40,6 +45,8 @@
 <footer>
     <p>&copy; 2024 Banking Application</p>
 </footer>
+<div th:replace="~{test-navbar :: scripts}"></div>
+
 </body>
 </html>
 

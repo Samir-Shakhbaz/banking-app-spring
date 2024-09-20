@@ -1,40 +1,55 @@
+<!-- fragments.html -->
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:fragment="header">
-  <meta charset="utf-8"/>
-  <title>Banking App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <!-- Styles Fragment -->
+  <th:block th:fragment="styles">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Additional styles can be added here -->
+    <style>
+      body {
+          padding-top: 56px; /* Adjust based on your navbar height */
+      }
+    </style>
+  </th:block>
 </head>
-<body style="background-color:#EDF1FF">
-
-<!-- Navigation Fragment -->
-<div th:fragment="navigation">
-  <nav class="navbar navbar-default">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand" th:href="@{/}">Banking App</a>
-      </div>
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="/" th:href="@{/}">Home</a></li>
-        <li><a href="/accounts/create" th:href="@{/accounts/create}">Create Account</a></li>
-        <li><a href="/accounts" th:href="@{/accounts}">View All Accounts</a></li>
-        <li><a href="/transactions" th:href="@{|/accounts/${account?.accountNumber}/transactions|}">View Transactions</a></li>
-        <li><a href="/statements" th:href="@{/statements}">Generate Statement</a></li>
-        <li><a href="/about" th:href="@{/about}">About</a></li>
-        <li><a th:href="@{/accounts/create/savings}">Create Savings Account</a></li>
-        <li><a th:href="@{/accounts/create/checking}">Create Checking Account</a></li>
-
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="/login" th:href="@{/login}"><span class="glyphicon glyphicon-log-in"></span> Log In</a></li>
-        <li><a href="/logout" th:href="@{/logout}"><span class="glyphicon glyphicon-log-out"></span> Log Out</a></li>
+<body>
+<!-- Navbar Fragment -->
+<div th:fragment="navbar">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">Your Brand</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarNav" aria-controls="navbarNav"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <!-- Navigation links -->
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/accounts/create}">Create Account</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/accounts}">View All Accounts</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/statements}">Generate Account Statement</a>
+        </li>
       </ul>
     </div>
   </nav>
 </div>
 
+<!-- Scripts Fragment -->
+<th:block th:fragment="scripts">
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <!-- Popper.js (compatible with Bootstrap 4) -->
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Additional scripts can be added here -->
+</th:block>
 </body>
 </html>

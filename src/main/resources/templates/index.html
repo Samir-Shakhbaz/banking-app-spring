@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Banking Application - Home</title>
+  <div th:replace="~{test-navbar :: styles}"></div>
 </head>
 <body>
 
@@ -30,15 +31,35 @@
     </ul>
   </nav>
 
-  <h2>Exchange Rates</h2>
-  <ul>
-    <li th:if="${exchangeRates == null || exchangeRates.isEmpty()}">
-      No exchange rates available at the moment.
-    </li>
-    <li th:each="rate : ${exchangeRates}">
-      <span th:text="${rate.currency} + ': ' + ${rate.rate}"></span>
-    </li>
-  </ul>
+
+  <!-- Exchange Rates Dropdown -->
+  <div class="dropdown mt-4">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="exchangeRatesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Exchange Rates
+    </button>
+    <div class="dropdown-menu" aria-labelledby="exchangeRatesDropdown">
+      <div th:if="${exchangeRates == null || exchangeRates.isEmpty()}">
+        <span class="dropdown-item">No exchange rates available at the moment.</span>
+      </div>
+      <div th:each="rate : ${exchangeRates}">
+        <span class="dropdown-item" th:text="${rate.currency} + ': ' + ${rate.rate}"></span>
+      </div>
+    </div>
+  </div>
+
+
+<!--  <h2>Exchange Rates</h2>-->
+<!--  <ul>-->
+<!--    <li th:if="${exchangeRates == null || exchangeRates.isEmpty()}">-->
+<!--      No exchange rates available at the moment.-->
+<!--    </li>-->
+<!--    <li th:each="rate : ${exchangeRates}">-->
+<!--      <span th:text="${rate.currency} + ': ' + ${rate.rate}"></span>-->
+<!--    </li>-->
+<!--  </ul>-->
+
+
+
 <!--  <h3 style="color: yellow">Exchange Rates</h3> &lt;!&ndash; Title with yellow color &ndash;&gt;-->
 <!--  <ul>-->
 <!--    <li th:each="rate : ${exchangeRates}">-->
@@ -51,6 +72,9 @@
 <footer>
   <p>&copy; 2024 Banking Application</p>
 </footer>
+
+<div th:replace="~{test-navbar :: scripts}"></div>
+
 
 </body>
 </html>

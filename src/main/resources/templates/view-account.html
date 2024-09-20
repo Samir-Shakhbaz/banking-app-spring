@@ -14,17 +14,22 @@
         <a th:href="@{/accounts}">Back to All Accounts</a>
         <a th:href="@{|/accounts/${account.accountNumber}/statement?period=monthly|}">Generate Monthly Account Statement</a>
         <a th:href="@{|/accounts/${account.accountNumber}/statement?period=yearly|}">Generate Yearly Account Statement</a>
-
-
     </nav>
+
 </header>
+
+
 <main>
     <h2>Account Information</h2>
+    <table class="table table-bordered">
+        <thead class="thead-light">
     <p><strong>Account ID:</strong> <span th:text="${account.id}"></span></p>
     <p><strong>Account Name:</strong> <span th:text="${account.name}"></span></p>
     <p><strong>Account Number:</strong> <span th:text="${account.accountNumber}"></span></p>
     <p><strong>Balance:</strong> <span th:text="${account.balance}"></span></p>
     <p><strong>Locked:</strong> <span th:text="${account.locked}"></span></p>
+        </thead>
+    </table>
 
     <h3>Actions</h3>
     <form th:action="@{|/accounts/${account.id}/deposit|}" method="post">
