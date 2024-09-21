@@ -15,37 +15,15 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/change-password")
-    public String showChangePasswordForm() {
-        return "change-password";
+    @GetMapping("/create")
+    public String showCreateUserForm(Model model) {
+        model.addAttribute("user", new User());
+        return "create-user";
     }
 
-    @PostMapping("/change-password")
-    public String changePassword(@RequestParam("currentPassword") String currentPassword,
-                                 @RequestParam("newPassword") String newPassword,
-                                 @RequestParam("confirmNewPassword") String confirmNewPassword,
-                                 Authentication authentication,
-                                 Model model) {
-        String username = authentication.getName();
-        User user = userService.findByUsername(username);
-
-        if (!userService.checkIfValidOldPassword(user, currentPassword)) {
-            model.addAttribute("error", "Current password is incorrect.");
-            return "change-password";
-        }
-
-        if (!newPassword.equals(confirmNewPassword)) {
-            model.addAttribute("error", "New passwords do not match.");
-            return "change-password";
-        }
-
-        if (newPassword.length() < 8) {
-            model.addAttribute("error", "Password must be at least 8 characters long.");
-            return "change-password";
-        }
-
-        userService.changeUserPassword(user, newPassword);
-        model.addAttribute("success", "Password changed successfully.");
-        return "change-password";
+    @PostMapping("/create")
+    public String createUser(@ModelAttribute User user) {
+        userService.createUser(user);
+        return "redirect:/accounts";
     }
 }
