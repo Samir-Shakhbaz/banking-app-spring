@@ -21,31 +21,31 @@
 </header>
 
 <main>
-  <h2>Navigation</h2>
-  <nav>
-    <ul>
-      <li><a th:href="@{/accounts/create}">Create Account</a></li>
-      <li><a th:href="@{/accounts}">View All Accounts</a></li>
-<!--      <li><a th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transaction History</a></li>-->
-      <li><a th:href="@{/statements}">Generate Account Statement</a></li>
-    </ul>
-  </nav>
+<!--  <h2>Navigation</h2>-->
+<!--  <nav>-->
+<!--    <ul>-->
+<!--      <li><a th:href="@{/accounts/create}">Create Account</a></li>-->
+<!--      <li><a th:href="@{/accounts}">View All Accounts</a></li>-->
+<!--&lt;!&ndash;      <li><a th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transaction History</a></li>&ndash;&gt;-->
+<!--      <li><a th:href="@{/statements}">Generate Account Statement</a></li>-->
+<!--    </ul>-->
+<!--  </nav>-->
 
 
-  <!-- Exchange Rates Dropdown -->
-  <div class="dropdown mt-4">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="exchangeRatesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      Exchange Rates
-    </button>
-    <div class="dropdown-menu" aria-labelledby="exchangeRatesDropdown">
-      <div th:if="${exchangeRates == null || exchangeRates.isEmpty()}">
-        <span class="dropdown-item">No exchange rates available at the moment.</span>
-      </div>
-      <div th:each="rate : ${exchangeRates}">
-        <span class="dropdown-item" th:text="${rate.currency} + ': ' + ${rate.rate}"></span>
-      </div>
-    </div>
-  </div>
+<!--  &lt;!&ndash; Exchange Rates Dropdown &ndash;&gt;-->
+<!--  <div class="dropdown mt-4">-->
+<!--    <button class="btn btn-secondary dropdown-toggle" type="button" id="exchangeRatesDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--      Exchange Rates-->
+<!--    </button>-->
+<!--    <div class="dropdown-menu" aria-labelledby="exchangeRatesDropdown">-->
+<!--      <div th:if="${exchangeRates == null || exchangeRates.isEmpty()}">-->
+<!--        <span class="dropdown-item">No exchange rates available at the moment.</span>-->
+<!--      </div>-->
+<!--      <div th:each="rate : ${exchangeRates}">-->
+<!--        <span class="dropdown-item" th:text="${rate.currency} + ': ' + ${rate.rate}"></span>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
 
 
 <!--  <h2>Exchange Rates</h2>-->
@@ -58,6 +58,40 @@
 <!--    </li>-->
 <!--  </ul>-->
 
+  <h2>Exchange Rates</h2>
+  <div id="exchangeRatesAccordion">
+    <div class="card">
+      <div class="card-header" id="headingExchangeRates">
+        <h2 class="mb-0">
+          <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseExchangeRates" aria-expanded="true" aria-controls="collapseExchangeRates">
+            View Exchange Rates
+          </button>
+        </h2>
+      </div>
+
+      <div id="collapseExchangeRates" class="collapse" aria-labelledby="headingExchangeRates" data-parent="#exchangeRatesAccordion">
+        <div class="card-body">
+          <table class="table table-bordered table-striped table-hover">
+            <thead class="thead-light">
+            <tr>
+              <th>Currency</th>
+              <th>Exchange Rate</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${exchangeRates == null || exchangeRates.isEmpty()}">
+              <td colspan="2">No exchange rates available at the moment.</td>
+            </tr>
+            <tr th:each="rate : ${exchangeRates}">
+              <td th:text="${rate.currency}"></td>
+              <td th:text="${rate.rate}"></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 <!--  <h3 style="color: yellow">Exchange Rates</h3> &lt;!&ndash; Title with yellow color &ndash;&gt;-->
