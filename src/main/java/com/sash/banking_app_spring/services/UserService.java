@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,11 +23,19 @@ public class UserService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+//    @Transactional
+//    public void createUser(User user) {
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        userRepository.save(user);
+//    }
+
     @Transactional
     public void createUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPasswordChangeRequired(true);
         userRepository.save(user);
     }
+
 
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
@@ -59,4 +68,13 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username);
     }
+
+    public void changePassword(String username, String newPassword) {
+        User user = userRepository.findByUsername(username);
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setPasswordChangeRequired(false);
+        userRepository.save(user);
+    }
+
+
 }

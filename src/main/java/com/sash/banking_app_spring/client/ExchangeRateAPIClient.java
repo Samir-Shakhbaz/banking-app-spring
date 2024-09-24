@@ -13,7 +13,7 @@ import java.util.Map;
 @Log4j2
 public class ExchangeRateAPIClient {
 
-    private final String API_URL = "https://openexchangerates.org/api/latest.json?app_id=4e897b0821a54b5fb1f65c64b6f8f1c8";
+    private final String API_URL = "https://openexchangerates.org/api/latest.json?app_id=";
 
     private final RestTemplate restTemplate;
 

@@ -20,7 +20,10 @@
           <a class="nav-link" th:href="@{/accounts/create}">Create Account</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" th:href="@{/accounts}">View All Accounts</a>
+          <a class="nav-link" th:href="@{/user/list}">Users</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/accounts}">Accounts</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" th:href="@{/user/create}">Create User</a>
@@ -30,7 +33,13 @@
             <a class="nav-link" th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transaction History</a>
         </li> -->
         <li class="nav-item">
-          <a class="nav-link" th:href="@{/statements}">Generate Account Statement</a>
+          <a class="nav-link" th:href="@{/statements}">Account Statement</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/login}">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/logout}">Logout</a>
         </li>
       </ul>
     </div>

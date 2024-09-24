@@ -1,12 +1,13 @@
 package com.sash.banking_app_spring.config;
 
+import com.sash.banking_app_spring.models.User;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -37,6 +38,15 @@ public class SecurityConfig {
 
                 .formLogin(form -> form
                         .defaultSuccessUrl("/", true)
+                        .successHandler((request, response, authentication) -> {
+
+                            User user = (User) authentication.getPrincipal();
+                            if (user.isPasswordChangeRequired()) {
+                                response.sendRedirect("/change-password");
+                            } else {
+                                response.sendRedirect("/accounts");
+                            }
+                        })
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
