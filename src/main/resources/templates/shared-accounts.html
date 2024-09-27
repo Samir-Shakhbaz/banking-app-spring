@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Shared Accounts</title>
+</head>
+<body>
+<h1>Shared Accounts</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Account Name</th>
+        <th>Balance</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="account : ${accounts}">
+        <td th:text="${account.name}"></td>
+        <td th:text="${account.balance}"></td>
+        <td>
+            <a th:href="@{|/accounts/${account.id}|}">View</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

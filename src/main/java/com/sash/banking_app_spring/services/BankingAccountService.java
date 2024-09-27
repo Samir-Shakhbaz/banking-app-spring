@@ -1,22 +1,24 @@
 package com.sash.banking_app_spring.services;
 
-import com.sash.banking_app_spring.models.BankingAccount;
-import com.sash.banking_app_spring.models.CheckingAccount;
-import com.sash.banking_app_spring.models.SavingsAccount;
-import com.sash.banking_app_spring.models.Transaction;
+import com.sash.banking_app_spring.models.*;
 import com.sash.banking_app_spring.repositories.BankingAccountRepository;
+import com.sash.banking_app_spring.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class BankingAccountService {
 
     @Autowired
     private BankingAccountRepository bankingAccountRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<BankingAccount> getAllAccounts() {
         return bankingAccountRepository.findAll();  // Returns all banking accounts
@@ -234,6 +236,22 @@ public class BankingAccountService {
         BankingAccount account = getAccountById(accountId);
         account.getNotifications().add(message);
         bankingAccountRepository.save(account);
+    }
+
+    public void addAccountToUser(Long userId, Long accountId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        BankingAccount account = bankingAccountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        user.getAccounts().add(account);
+        userRepository.save(user); // Save the updated user with the new account link
+    }
+
+    public Set<BankingAccount> getUserAccounts(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return user.getAccounts(); // Returns all accounts shared with the user
     }
 
 

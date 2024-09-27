@@ -29,6 +29,6 @@ public class PasswordChangeController {
     public String changePassword(@ModelAttribute PasswordForm passwordForm, Principal principal) {
         String username = principal.getName();
         userService.changePassword(username, passwordForm.getNewPassword());
-        return "redirect:/";
+        return "redirect:/home";
     }
 }

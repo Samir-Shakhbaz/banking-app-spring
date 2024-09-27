@@ -11,9 +11,9 @@ public class LoginController {
         return "login";
     }
 
-    @PostMapping("/login")
-    public String handleLogin(@RequestParam String username, @RequestParam String password) {
-        return "redirect:/";
-    }
+//    @PostMapping("/login")
+//    public String handleLogin(@RequestParam String username, @RequestParam String password) {
+//        return "redirect:/";
+//    }
 
 }

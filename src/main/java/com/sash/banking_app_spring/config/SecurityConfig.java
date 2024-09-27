@@ -1,5 +1,6 @@
 package com.sash.banking_app_spring.config;
 
+import com.sash.banking_app_spring.models.BankingAccount;
 import com.sash.banking_app_spring.models.User;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.Optional;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -31,20 +34,22 @@ public class SecurityConfig {
                 // Configuring endpoint access
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/login","/user/create").permitAll()
-                        .requestMatchers("/accounts/**").hasRole("USER")
+                        .requestMatchers("/accounts/create").hasRole("ADMIN")
+                        .requestMatchers("/accounts/{id}","/home").hasRole("USER")
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
 
                 .formLogin(form -> form
-                        .defaultSuccessUrl("/", true)
+                        .defaultSuccessUrl("/home", true)
                         .successHandler((request, response, authentication) -> {
 
                             User user = (User) authentication.getPrincipal();
                             if (user.isPasswordChangeRequired()) {
                                 response.sendRedirect("/change-password");
                             } else {
-                                response.sendRedirect("/accounts");
+
+                                response.sendRedirect("/accounts/" + user.getId());
                             }
                         })
                         .failureUrl("/login?error=true")

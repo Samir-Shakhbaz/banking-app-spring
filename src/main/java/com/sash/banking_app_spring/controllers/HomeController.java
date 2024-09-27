@@ -31,5 +31,10 @@ public class HomeController {
         return "login";
     }
 
+    @GetMapping("/home")
+    public String homePage(Model model){
+        return "/home";
+    }
+
 
 }

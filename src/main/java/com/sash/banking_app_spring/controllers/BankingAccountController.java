@@ -3,20 +3,21 @@ package com.sash.banking_app_spring.controllers;
 import com.sash.banking_app_spring.client.ExchangeRateAPIClient;
 import com.sash.banking_app_spring.client.ExchangeRateResponse;
 import com.sash.banking_app_spring.client.Rate;
-import com.sash.banking_app_spring.models.BankingAccount;
-import com.sash.banking_app_spring.models.CheckingAccount;
-import com.sash.banking_app_spring.models.SavingsAccount;
-import com.sash.banking_app_spring.models.Transaction;
+import com.sash.banking_app_spring.models.*;
 import com.sash.banking_app_spring.repositories.BankingAccountRepository;
+import com.sash.banking_app_spring.repositories.UserRepository;
 import com.sash.banking_app_spring.services.BankingAccountService;
 //import com.sash.banking_app_spring.client.ExchangeRateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/accounts")
@@ -27,6 +28,9 @@ public class BankingAccountController {
 
     @Autowired
     private BankingAccountRepository bankingAccountRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
 //    @Autowired
 //    private ExchangeRateService exchangeRateService;
@@ -50,18 +54,33 @@ public class BankingAccountController {
         return "list-accounts";
     }
 
+    @GetMapping("/my-accounts")
+    public String getUserAccounts(Model model, Principal principal) {
+        String username = principal.getName();
+        User user = userRepository.findByUsername(username);
+        Set<BankingAccount> accounts = bankingAccountService.getUserAccounts(user.getId());
+
+        model.addAttribute("accounts", accounts);
+        return "account-list";
+    }
+
     @GetMapping("/testNavbar")
     public String testNavbar(){
         return "test-navbar";
     }
 
-    @GetMapping("/{accountId}")
-    public String showAccount(@PathVariable Long accountId, Model model) {
-        BankingAccount account = bankingAccountService.getAccountById(accountId);
-        System.out.println("Fetching account with ID: " + accountId);
+    @GetMapping("/{userId}")
+    public String showAccount(@PathVariable Long userId, Model model, Principal principal) {
+       User user = userRepository.findById(userId).orElse(null);
+        System.out.println("Fetching account with ID: " + userId);
 
-        if (account != null) {
-            model.addAttribute("account", account);
+        if(user == null || user.getAccounts() == null) {
+            model.addAttribute("error", "Account not found");
+            return "redirect:/accounts";
+        }
+
+        if (user.getAccounts().size() > 0) {
+            model.addAttribute("account", user.getAccounts().toArray()[0]);
             return "view-account";
         } else {
             model.addAttribute("error", "Account not found");
@@ -226,5 +245,7 @@ public class BankingAccountController {
 //        bankingAccountService.createCheckingAccount(name, initialDeposit, accountNumber, overdraftLimit);
 //        return "redirect:/accounts";
 //    }
+
+
 
 }

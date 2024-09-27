@@ -7,7 +7,9 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -22,6 +24,14 @@ public class User implements UserDetails {
     private String password;
     private String role;
     private boolean passwordChangeRequired;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_accounts", // Table to join users and accounts
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "account_id")
+    )
+    private Set<BankingAccount> accounts = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
