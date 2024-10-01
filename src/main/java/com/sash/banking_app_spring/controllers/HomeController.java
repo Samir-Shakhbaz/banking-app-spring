@@ -28,7 +28,7 @@ public class HomeController {
         List<BankingAccount> accounts = bankingAccountService.getAllAccounts();
         model.addAttribute("accounts", accounts);
 
-        return "login";
+        return "index";
     }
 
     @GetMapping("/home")

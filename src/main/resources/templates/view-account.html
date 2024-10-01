@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Account</title>
+    <title>View Accounts</title>
 
+    <!-- Include any required CSS styles -->
     <div th:replace="~{test-navbar :: styles}"></div>
 </head>
 <body>
 
+<!-- Navbar -->
 <div th:replace="~{test-navbar :: navbar}"></div>
 
-<h1>Banking Account Details</h1>
+<h1>User Banking Accounts</h1>
+
+<!-- Navigation Links -->
 <nav>
     <ul>
         <li><a th:href="@{/}">Back to Index</a></li>
         <li><a th:href="@{/accounts}">Back to All Accounts</a></li>
-        <li><a th:href="@{|/accounts/${account.accountNumber}/statement?period=monthly|}">
-            Generate Monthly Account Statement</a></li>
-        <li><a th:href="@{|/accounts/${account.accountNumber}/statement?period=yearly|}">
-            Generate Yearly Account Statement</a></li>
     </ul>
 </nav>
 
-
 <main>
+    <!-- Displaying Account Information -->
     <h2>Account Information</h2>
     <table class="table table-bordered">
         <thead class="thead-light">
@@ -34,44 +34,67 @@
             <th>Account Number</th>
             <th>Balance</th>
             <th>Locked</th>
+            <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        <tr>
+        <tr th:each="account : ${user.accounts}">
             <td th:text="${account.id}"></td>
             <td th:text="${account.name}"></td>
             <td th:text="${account.accountNumber}"></td>
             <td th:text="${account.balance}"></td>
             <td th:text="${account.locked}"></td>
+            <td>
+                <!-- Action Links: View statements and transactions -->
+                <a th:href="@{|/accounts/${account.accountNumber}/statement?period=monthly|}">Monthly Statement</a> |
+                <a th:href="@{|/accounts/${account.accountNumber}/statement?period=yearly|}">Yearly Statement</a> |
+                <a th:href="@{|/accounts/${account.id}/transactions|}">View Transactions</a>
+            </td>
         </tr>
         </tbody>
     </table>
 
-
+    <!-- Deposit and Withdraw Actions -->
     <h3>Actions</h3>
-    <form th:action="@{|/accounts/${account.id}/deposit|}" method="post">
-        <label for="depositAmount">Deposit Amount:</label>
-        <input type="number" id="depositAmount" name="amount" step="0.01" required>
-        <button type="submit">Deposit</button>
-    </form>
-
-    <form th:action="@{|/accounts/${account.id}/withdraw|}" method="post">
-        <label for="withdrawAmount">Withdraw Amount:</label>
-        <input type="number" id="withdrawAmount" name="amount" step="0.01" required>
-        <button type="submit">Withdraw</button>
-
-        <p th:if="${message}" th:text="${message}"></p>
-    </form>
-
-
-    <a th:href="@{|/accounts/delete/${account.id}|}" th:onclick="return confirm('Are you sure?');">Delete Account</a>
-    <a th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transaction History</a>
-
-
-    <h3>Transaction History</h3>
-    <table>
+    <table class="table table-bordered">
         <thead>
         <tr>
+            <th>Account Type</th>
+            <th>Deposit</th>
+            <th>Withdraw</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="account : ${user.accounts}">
+            <td th:text="${account.name}"></td>
+            <td>
+                <!-- Deposit Form -->
+                <form th:action="@{|/accounts/${user.id}/accounts/${account.id}/deposit|}" method="post">
+                    <label for="depositAmount">Deposit Amount:</label>
+                    <input type="number" id="depositAmount" name="amount" step="0.01" required>
+                    <button type="submit">Deposit</button>
+                </form>
+
+            </td>
+            <td>
+                <!-- Withdraw Form -->
+                <form th:action="@{|/accounts/${user.id}/accounts/${account.id}/withdraw|}" method="post">
+                    <label for="withdrawAmount">Withdraw Amount:</label>
+                    <input type="number" id="withdrawAmount" name="amount" step="0.01" required>
+                    <button type="submit">Withdraw</button>
+                </form>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+    <!-- Transaction History for Each Account -->
+    <h3>Transaction History</h3>
+    <table th:each="account : ${user.accounts}" class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Account Name</th>
             <th>Type</th>
             <th>Amount</th>
             <th>Date</th>
@@ -80,20 +103,25 @@
         </thead>
         <tbody>
         <tr th:each="transaction : ${account.transactionHistory}">
+            <td th:text="${account.name}"></td>
             <td th:text="${transaction.type}"></td>
             <td th:text="${transaction.amount}"></td>
             <td th:text="${transaction.date}"></td>
-            <td th:text="${transaction.targetAccount != null ? 'Transfer to Account: ' + transaction.targetAccount : ''}"></td>
+            <td th:text="${transaction.targetAccount != null ? 'Transfer to Account: ' + transaction.targetAccount : 'Initial Deposit'}"></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(account.transactionHistory)}">
+            <td colspan="5">No transactions available</td>
         </tr>
         </tbody>
     </table>
-    <p th:if="${#lists.isEmpty(account.transactionHistory)}">No transactions available.</p>
+
 </main>
 
 <footer>
     <p>&copy; 2024 Banking System</p>
 </footer>
 
+<!-- Include any required JS scripts -->
 <div th:replace="~{test-navbar :: scripts}"></div>
 
 </body>

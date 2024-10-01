@@ -1,42 +1,42 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create User</title>
-  <div th:replace="~{test-navbar :: styles}"></div>
-</head>
-<body>
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--  <meta charset="UTF-8">-->
+<!--  <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--  <title>Create User</title>-->
+<!--  <div th:replace="~{test-navbar :: styles}"></div>-->
+<!--</head>-->
+<!--<body>-->
 
-<div th:replace="test-navbar.html :: navbar"></div>
+<!--<div th:replace="test-navbar.html :: navbar"></div>-->
 
-<header>
-  <h1>Create User</h1>
-  <nav>
-    <a th:href="@{/accounts}">View Tickets</a>
-    <a th:href="@{/users}">View Users</a>
-  </nav>
-</header>
-<main>
-  <form th:action="@{/user/create}" th:object="${user}" method="post">
-    <label for="username">Username:</label>
-    <input type="text" id="username" th:field="*{username}" required>
+<!--<header>-->
+<!--  <h1>Create User</h1>-->
+<!--  <nav>-->
+<!--    <a th:href="@{/accounts}">View Tickets</a>-->
+<!--    <a th:href="@{/users}">View Users</a>-->
+<!--  </nav>-->
+<!--</header>-->
+<!--<main>-->
+<!--  <form th:action="@{/user/create}" th:object="${user}" method="post">-->
+<!--    <label for="username">Username:</label>-->
+<!--    <input type="text" id="username" th:field="*{username}" required>-->
 
-    <label for="password">Password:</label>
-    <input type="password" id="password" th:field="*{password}" required>
+<!--    <label for="password">Password:</label>-->
+<!--    <input type="password" id="password" th:field="*{password}" required>-->
 
-    <label for="role">Role:</label>
-    <input type="text" id="role" th:field="*{role}" required>
+<!--    <label for="role">Role:</label>-->
+<!--    <input type="text" id="role" th:field="*{role}" required>-->
 
-    <button type="submit">Create User</button>
-  </form>
+<!--    <button type="submit">Create User</button>-->
+<!--  </form>-->
 
-</main>
-<footer>
-  <p>&copy; 2024 Banking App </p>
-</footer>
+<!--</main>-->
+<!--<footer>-->
+<!--  <p>&copy; 2024 Banking App </p>-->
+<!--</footer>-->
 
-<div th:replace="~{test-navbar :: scripts}"></div>
+<!--<div th:replace="~{test-navbar :: scripts}"></div>-->
 
-</body>
-</html>
+<!--</body>-->
+<!--</html>-->

@@ -25,14 +25,40 @@ public class UserController {
     @GetMapping("/create")
     public String showCreateUserForm(Model model) {
         model.addAttribute("user", new User());
-        return "create-user";
+        return "create-user-and-account";
     }
 
-    @PostMapping("/create")
-    public String createUser(@ModelAttribute User user) {
-        userService.createUser(user);
-        return "redirect:/accounts";
-    }
+//    @PostMapping("/create")
+//    public String createUser(@ModelAttribute User user) {
+//        userService.createUser(user);
+//        return "redirect:/accounts";
+//    }
+
+//    @PostMapping("/create")
+//    public String createUser(@ModelAttribute User user) {
+//        userService.createUserWithAccounts(user);
+//        return "redirect:/login";  // Redirect to login after user creation
+//    }
+
+        @PostMapping("/create")
+        public String createUserWithAccounts(
+                @RequestParam String username,
+                @RequestParam String password,
+                @RequestParam String role) {
+
+            // Create a new User object and set the username and password
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword(password);// The service will handle password encoding
+            user.setRole(role);
+
+            // Call the service to create the user with checking and savings accounts
+            userService.createUserWithAccounts(user);
+
+            // Redirect to login or home page after success
+            return "redirect:/";
+        }
+
 
     @PostMapping("/change-password")
     public String changePassword(@RequestParam("newPassword") String newPassword,

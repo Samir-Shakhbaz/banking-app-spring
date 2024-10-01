@@ -70,7 +70,7 @@ public class BankingAccountController {
     }
 
     @GetMapping("/{userId}")
-    public String showAccount(@PathVariable Long userId, Model model, Principal principal) {
+    public String showAccounts(@PathVariable Long userId, Model model, Principal principal) {
        User user = userRepository.findById(userId).orElse(null);
         System.out.println("Fetching account with ID: " + userId);
 
@@ -79,14 +79,19 @@ public class BankingAccountController {
             return "redirect:/accounts";
         }
 
-        if (user.getAccounts().size() > 0) {
-            model.addAttribute("account", user.getAccounts().toArray()[0]);
-            return "view-account";
-        } else {
-            model.addAttribute("error", "Account not found");
-            return "redirect:/accounts";
-        }
+        model.addAttribute("user", user);  // Assuming the 'user' has an 'accounts' list
+        return "view-account";
     }
+
+//    @GetMapping("/{accountId}")
+//    public String showAccountDetails(@PathVariable Long accountId, Model model) {
+//        BankingAccount account = bankingAccountService.getAccountById(accountId);
+//        if (account == null) {
+//            return "redirect:/accounts"; // Redirect if account is not found
+//        }
+//        model.addAttribute("account", account);
+//        return "view-account"; // Stay on the same page and show updated data
+//    }
 
 
 //    @GetMapping("/create")
@@ -142,19 +147,31 @@ public class BankingAccountController {
 //        return "account-details";
 //    }
 
-    @PostMapping("/{accountNumber}/deposit")
-    public String deposit(@PathVariable Long accountNumber, @RequestParam double amount, Model model) {
-        bankingAccountService.deposit(accountNumber, amount);
-        model.addAttribute("message", "Deposit successful!");
-        return "redirect:/accounts/" + accountNumber;
+//    @GetMapping("/{accountId}")
+//    public String showAccountDetails(@PathVariable Long accountId, Model model) {
+//        BankingAccount account = bankingAccountService.getAccountById(accountId);
+//        if (account == null) {
+//            return "redirect:/accounts"; // Redirect to the accounts list if account is not found
+//        }
+//        model.addAttribute("account", account);
+//        return "view-account"; // This would be your Thymeleaf template for account details
+//    }
+
+
+    @PostMapping("/{userId}/accounts/{accountId}/deposit")
+    public String deposit(@PathVariable Long userId, @PathVariable Long accountId, @RequestParam double amount) {
+        bankingAccountService.deposit(accountId, amount);
+        // Redirect back to the user's accounts page
+        return "redirect:/accounts/" + userId;
     }
 
-    @PostMapping("/{accountNumber}/withdraw")
-    public String withdraw(@PathVariable Long accountNumber, @RequestParam double amount, Model model) {
-        String message = bankingAccountService.withdraw(accountNumber, amount);
-        model.addAttribute("message", message);
-        return "redirect:/accounts/" + accountNumber;
+
+    @PostMapping("/{userId}/accounts/{accountId}/withdraw")
+    public String withdraw(@PathVariable Long userId, @PathVariable Long accountId, @RequestParam double amount) {
+        bankingAccountService.withdraw(accountId, amount);
+        return "redirect:/accounts/" + userId;
     }
+
 
     @GetMapping("/{accountNumber}/statement")
     public String viewStatement(@PathVariable Long accountNumber, @RequestParam String period, Model model) {
