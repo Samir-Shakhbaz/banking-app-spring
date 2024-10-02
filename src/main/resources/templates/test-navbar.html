@@ -19,22 +19,29 @@
 <!--        <li class="nav-item">-->
 <!--          <a class="nav-link" th:href="@{/accounts/create}">Create Account</a>-->
 <!--        </li>-->
-        <li class="nav-item">
+        <li sec:authorize="hasRole('ADMIN')">
           <a class="nav-link" th:href="@{/user/list}">Users</a>
         </li>
-        <li class="nav-item">
+        <li sec:authorize="hasRole('ADMIN')">
           <a class="nav-link" th:href="@{/accounts}">Accounts</a>
         </li>
-        <li class="nav-item">
+        <li sec:authorize="hasRole('ADMIN')">
           <a class="nav-link" th:href="@{/user/create}">Create User</a>
         </li>
-        <!-- Uncomment if you want to include this link -->
+          <li sec:authorize="isAuthenticated()">
+              <a class="nav-link" th:href="@{|/accounts/${#authentication.principal.id}/transfer|}">Transfer Money</a>
+          </li>
+          <li sec:authorize="hasRole('ADMIN')">
+              <a class="nav-link" th:href="@{|/accounts/${#authentication.principal.id}/add-user|}">Add User to Account</a>
+          </li>
+
+          <!-- Uncomment if you want to include this link -->
         <!-- <li class="nav-item">
             <a class="nav-link" th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transaction History</a>
         </li> -->
-        <li class="nav-item">
-          <a class="nav-link" th:href="@{/statements}">Account Statement</a>
-        </li>
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link" th:href="@{/statements}">Account Statement</a>-->
+<!--        </li>-->
         <li class="nav-item">
           <a class="nav-link" th:href="@{/login}">Login</a>
         </li>

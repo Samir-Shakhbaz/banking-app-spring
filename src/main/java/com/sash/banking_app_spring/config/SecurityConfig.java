@@ -33,8 +33,8 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 // Configuring endpoint access
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/login","/user/create").permitAll()
-                        .requestMatchers("/accounts/create").hasRole("ADMIN")
+                        .requestMatchers("/", "/login").permitAll()
+                        .requestMatchers("/accounts/create","/user/create").hasRole("ADMIN")
                         .requestMatchers("/accounts/{id}","/home").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()

@@ -1,5 +1,6 @@
 package com.sash.banking_app_spring.services;
 
+import com.sash.banking_app_spring.models.BankingAccount;
 import com.sash.banking_app_spring.models.CheckingAccount;
 import com.sash.banking_app_spring.models.SavingsAccount;
 import com.sash.banking_app_spring.models.User;
@@ -85,38 +86,44 @@ public class UserService implements UserDetailsService {
     @Transactional
     public User createUserWithAccounts(User user) {
         if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("USER");  // Assign a default role if missing
+            user.setRole("USER");
         }
 
-        // Encode the user's password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        // Create checking account
         CheckingAccount checkingAccount = new CheckingAccount();
         checkingAccount.setName(user.getUsername() + " Checking Account");
         checkingAccount.setBalance(0.0);
         checkingAccount.setAccountNumber(generateRandomAccountNumber());
 
-        // Create savings account
         SavingsAccount savingsAccount = new SavingsAccount();
         savingsAccount.setName(user.getUsername() + " Savings Account");
         savingsAccount.setBalance(0.0);
         savingsAccount.setAccountNumber(generateRandomAccountNumber());
 
-        // Save accounts and assign to the user
         bankingAccountRepository.save(checkingAccount);
         bankingAccountRepository.save(savingsAccount);
 
         user.getAccounts().add(checkingAccount);
         user.getAccounts().add(savingsAccount);
 
-        // Save user with accounts
         return userRepository.save(user);
     }
 
     private Long generateRandomAccountNumber() {
-        // Generate an 8-digit random account number
+        // generate an 8-digit random account number
         return (long) (Math.random() * 90000000) + 10000000;  // Ensures an 8-digit number
+    }
+
+    @Transactional
+    public User addUserToExistingAccounts(User newUser, List<Long> accountIds) {
+
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        List<BankingAccount> accounts = bankingAccountRepository.findAllById(accountIds);
+
+        newUser.getAccounts().addAll(accounts);
+
+        return userRepository.save(newUser);
     }
 
 }

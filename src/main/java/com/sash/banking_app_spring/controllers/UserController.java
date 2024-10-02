@@ -46,16 +46,13 @@ public class UserController {
                 @RequestParam String password,
                 @RequestParam String role) {
 
-            // Create a new User object and set the username and password
             User user = new User();
             user.setUsername(username);
-            user.setPassword(password);// The service will handle password encoding
+            user.setPassword(password);
             user.setRole(role);
 
-            // Call the service to create the user with checking and savings accounts
             userService.createUserWithAccounts(user);
 
-            // Redirect to login or home page after success
             return "redirect:/";
         }
 
@@ -83,5 +80,13 @@ public class UserController {
         model.addAttribute("users", users);
         return "list-users";
     }
+
+    @PostMapping("/{userId}/delete")
+    public String deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return "redirect:/user/list";
+    }
+
+
 
 }

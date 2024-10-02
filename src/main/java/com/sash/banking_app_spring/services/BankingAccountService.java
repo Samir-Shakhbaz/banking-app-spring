@@ -3,6 +3,7 @@ package com.sash.banking_app_spring.services;
 import com.sash.banking_app_spring.models.*;
 import com.sash.banking_app_spring.repositories.BankingAccountRepository;
 import com.sash.banking_app_spring.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -106,25 +107,25 @@ public class BankingAccountService {
         }
     }
 
-    public String transfer(Long fromAccountId, Long toAccountId, double amount) {
-        Optional<BankingAccount> fromAccountOpt = bankingAccountRepository.findById(fromAccountId);
-        Optional<BankingAccount> toAccountOpt = bankingAccountRepository.findById(toAccountId);
-
-        if (fromAccountOpt.isPresent() && toAccountOpt.isPresent()) {
-            BankingAccount fromAccount = fromAccountOpt.get();
-            BankingAccount toAccount = toAccountOpt.get();
-
-            if (fromAccount.getBalance() >= amount) {
-                fromAccount.setBalance(fromAccount.getBalance() - amount);
-                toAccount.setBalance(toAccount.getBalance() + amount);
-                bankingAccountRepository.save(fromAccount);
-                bankingAccountRepository.save(toAccount);
-                return "Transfer successful.";
-            }
-            return "Insufficient balance.";
-        }
-        return "One or both accounts not found.";
-    }
+//    public String transfer(Long fromAccountId, Long toAccountId, double amount) {
+//        Optional<BankingAccount> fromAccountOpt = bankingAccountRepository.findById(fromAccountId);
+//        Optional<BankingAccount> toAccountOpt = bankingAccountRepository.findById(toAccountId);
+//
+//        if (fromAccountOpt.isPresent() && toAccountOpt.isPresent()) {
+//            BankingAccount fromAccount = fromAccountOpt.get();
+//            BankingAccount toAccount = toAccountOpt.get();
+//
+//            if (fromAccount.getBalance() >= amount) {
+//                fromAccount.setBalance(fromAccount.getBalance() - amount);
+//                toAccount.setBalance(toAccount.getBalance() + amount);
+//                bankingAccountRepository.save(fromAccount);
+//                bankingAccountRepository.save(toAccount);
+//                return "Transfer successful.";
+//            }
+//            return "Insufficient balance.";
+//        }
+//        return "One or both accounts not found.";
+//    }
 
     public String generateStatement(Long accountNumber, String period) {
         BankingAccount account = getAccountByAccountNumber(accountNumber);
@@ -245,13 +246,52 @@ public class BankingAccountService {
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
         user.getAccounts().add(account);
-        userRepository.save(user); // Save the updated user with the new account link
+        userRepository.save(user);
     }
 
     public Set<BankingAccount> getUserAccounts(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return user.getAccounts(); // Returns all accounts shared with the user
+        return user.getAccounts();
+    }
+
+    public String transfer(Long sourceAccountId, Long targetAccountId, double amount) {
+        BankingAccount sourceAccount = bankingAccountRepository.findById(sourceAccountId)
+                .orElseThrow(() -> new RuntimeException("Source account not found"));
+
+        BankingAccount targetAccount = bankingAccountRepository.findById(targetAccountId)
+                .orElseThrow(() -> new RuntimeException("Target account not found"));
+
+        if (sourceAccount.getBalance() < amount) {
+            return "Insufficient funds in the source account";
+        }
+
+        sourceAccount.setBalance(sourceAccount.getBalance() - amount);
+        targetAccount.setBalance(targetAccount.getBalance() + amount);
+
+        bankingAccountRepository.save(sourceAccount);
+        bankingAccountRepository.save(targetAccount);
+
+        return "Transfer successful!";
+    }
+
+    @Transactional
+    public void addUserToAccount(Long userId, Long accountId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        BankingAccount account = bankingAccountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        // Add the account to the user's set of accounts
+        user.getAccounts().add(account);
+
+        // Add the user to the account's set of users (optional if bidirectional)
+        account.getUsers().add(user);
+
+        // Save the updated entities
+        userRepository.save(user);
+        bankingAccountRepository.save(account);
     }
 
 

@@ -20,6 +20,7 @@
             <th>ID</th>
             <th>Username</th>
             <th>Role</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -27,6 +28,12 @@
             <td th:text="${user.id}"></td>
             <td th:text="${user.username}"></td>
             <td th:text="${user.role}"></td>
+            <td> <!-- Delete Button -->
+                <form th:action="@{|/user/${user.id}/delete|}" method="post"
+                      onsubmit="return confirm('Are you sure you want to delete this user?');">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </td>
         </tr>
         </tbody>
     </table>

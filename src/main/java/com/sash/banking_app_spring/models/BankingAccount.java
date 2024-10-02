@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)  // here we can choose JOINED or TABLE_PER_CLASS based on design
@@ -38,12 +40,8 @@ public abstract class BankingAccount {
     @ElementCollection
     private List<String> notifications = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "joint_account_holders",
-            joinColumns = @JoinColumn(name = "banking_account_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> jointAccountHolders = new ArrayList<>();
+    @ManyToMany(mappedBy = "accounts")
+    private Set<User> users = new HashSet<>();
+
 
 }

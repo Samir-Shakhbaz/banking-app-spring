@@ -1,0 +1,29 @@
+<h3>Transfer Money</h3>
+<form th:action="@{|/accounts/${user.id}/transfer|}" method="post">
+    <!-- From Account Dropdown -->
+    <div class="form-group">
+        <label for="sourceAccount">From Account:</label>
+        <select id="sourceAccount" name="sourceAccountId" class="form-control" required>
+            <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name + ' - ' + account.accountNumber}"></option>
+        </select>
+    </div>
+
+    <!-- To Account Dropdown -->
+    <div class="form-group">
+        <label for="targetAccount">To Account:</label>
+        <select id="targetAccount" name="targetAccountId" class="form-control" required>
+            <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name + ' - ' + account.accountNumber}"></option>
+        </select>
+    </div>
+
+    <!-- Transfer Amount -->
+    <div class="form-group">
+        <label for="transferAmount">Transfer Amount:</label>
+        <input type="number" id="transferAmount" name="amount" class="form-control" step="0.01" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Transfer</button>
+</form>
+
+<!-- Display a message if available -->
+<p th:if="${message}" th:text="${message}"></p>

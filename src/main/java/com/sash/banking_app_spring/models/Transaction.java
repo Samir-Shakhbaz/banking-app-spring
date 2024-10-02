@@ -21,7 +21,7 @@ public class Transaction {
     private LocalDateTime date;
 
     @Column(name = "target_account")
-    private String targetAccount;
+    private Long targetAccount;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
@@ -29,7 +29,7 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(String type, double amount, LocalDateTime date, String targetAccount) {
+    public Transaction(String type, double amount, LocalDateTime date, Long targetAccount) {
         this.type = type;
         this.amount = amount;
         this.date = date;

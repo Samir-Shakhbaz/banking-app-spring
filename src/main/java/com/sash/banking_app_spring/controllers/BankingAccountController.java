@@ -8,8 +8,10 @@ import com.sash.banking_app_spring.repositories.BankingAccountRepository;
 import com.sash.banking_app_spring.repositories.UserRepository;
 import com.sash.banking_app_spring.services.BankingAccountService;
 //import com.sash.banking_app_spring.client.ExchangeRateService;
+import com.sash.banking_app_spring.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,10 +29,16 @@ public class BankingAccountController {
     private BankingAccountService bankingAccountService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private BankingAccountRepository bankingAccountRepository;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
 //    @Autowired
 //    private ExchangeRateService exchangeRateService;
@@ -262,6 +270,77 @@ public class BankingAccountController {
 //        bankingAccountService.createCheckingAccount(name, initialDeposit, accountNumber, overdraftLimit);
 //        return "redirect:/accounts";
 //    }
+
+
+    @GetMapping("/{userId}/transfer")
+    public String showTransferForm(@PathVariable Long userId, Model model, Principal principal) {
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user == null || user.getAccounts().isEmpty()) {
+            model.addAttribute("error", "Account not found or does not belong to this user.");
+            return "redirect:/user/" + userId + "/accounts";
+        }
+
+        model.addAttribute("user", user);
+        model.addAttribute("accounts", user.getAccounts());
+
+        return "transfer-money";
+    }
+
+    @PostMapping("/{userId}/transfer")
+    public String transfer(@PathVariable Long userId,
+                           @RequestParam Long sourceAccountId,
+                           @RequestParam Long targetAccountId,
+                           @RequestParam double amount, Model model) {
+
+        String result = bankingAccountService.transfer(sourceAccountId, targetAccountId, amount);
+
+
+        model.addAttribute("message", result);
+        return "redirect:/accounts/" + userId;
+    }
+
+    @GetMapping("/{userId}/add-user")
+    public String showAddUserForm(@PathVariable Long userId, Model model) {
+        User user = userRepository.findById(userId).orElse(null);
+
+        if (user == null || user.getAccounts().isEmpty()) {
+            model.addAttribute("error", "User or Accounts not found.");
+            return "redirect:/accounts/" + userId;
+        }
+
+        BankingAccount checkingAccount = user.getAccounts().stream()
+                .filter(account -> account instanceof CheckingAccount)
+                .findFirst()
+                .orElse(null);
+
+        BankingAccount savingsAccount = user.getAccounts().stream()
+                .filter(account -> account instanceof SavingsAccount)
+                .findFirst()
+                .orElse(null);
+
+        model.addAttribute("user", user);
+        model.addAttribute("checkingAccount", checkingAccount);
+        model.addAttribute("savingsAccount", savingsAccount);
+
+        return "add-user";
+    }
+
+    @PostMapping("/{userId}/add-user")
+    public String addUserToExistingAccounts(@RequestParam String newUsername,
+                                            @RequestParam String newPassword,
+                                            @RequestParam List<Long> accountSelection,
+                                            @PathVariable Long userId, Model model) {
+
+        User newUser = new User();
+        newUser.setUsername(newUsername);
+        newUser.setPassword(newPassword);
+
+        userService.addUserToExistingAccounts(newUser, accountSelection);
+
+        return "redirect:/accounts/" + userId;
+    }
+
 
 
 
