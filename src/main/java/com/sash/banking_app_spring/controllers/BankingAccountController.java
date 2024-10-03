@@ -251,13 +251,13 @@ public class BankingAccountController {
         return "redirect:/accounts/" + accountId;
     }
 
-    @GetMapping("/{accountId}/notifications")
-    public String viewNotifications(@PathVariable Long accountId, Model model) {
-        BankingAccount account = bankingAccountService.getAccountById(accountId);
-        model.addAttribute("account", account);
-        model.addAttribute("notifications", account.getNotifications());
-        return "notifications";
-    }
+//    @GetMapping("/{accountId}/notifications")
+//    public String viewNotifications(@PathVariable Long accountId, Model model) {
+//        BankingAccount account = bankingAccountService.getAccountById(accountId);
+//        model.addAttribute("account", account);
+//        model.addAttribute("notifications", account.getNotifications());
+//        return "notifications";
+//    }
 
 //    @PostMapping("/create-savings")
 //    public String createSavingsAccount(@RequestParam String name, @RequestParam double initialDeposit, Long accountNumber, @RequestParam double interestRate) {
@@ -335,12 +335,60 @@ public class BankingAccountController {
         User newUser = new User();
         newUser.setUsername(newUsername);
         newUser.setPassword(newPassword);
+        newUser.setRole("USER");
 
         userService.addUserToExistingAccounts(newUser, accountSelection);
 
         return "redirect:/accounts/" + userId;
     }
 
+    @GetMapping("/{userId}/notifications")
+    public String showNotificationSettings(@PathVariable Long userId, Model model) {
+        User user = userService.findById(userId).orElse(null);
+        NotificationSettings settings = user.getNotificationSettings();
+
+        // If settings are null, create new default settings
+        if (settings == null) {
+            settings = new NotificationSettings();
+            settings.setLoginNotification(false);
+            settings.setCheckingAccountNotification(false);
+            settings.setSavingsAccountNotification(false);
+            settings.setEmailNotification(false);
+            settings.setPhoneNotification(false);
+            user.setNotificationSettings(settings);
+            userService.updateNotificationSettings(user); // Save the new settings
+        }
+
+        model.addAttribute("user", user);
+        model.addAttribute("settings", settings);
+
+        return "notification-settings";
+    }
+
+
+
+
+    @PostMapping("/{userId}/notifications")
+    public String updateNotificationSettings(@PathVariable Long userId,
+                                             @RequestParam(required = false) boolean loginNotification,
+                                             @RequestParam(required = false) boolean checkingAccountNotification,
+                                             @RequestParam(required = false) boolean savingsAccountNotification,
+                                             @RequestParam(required = false) boolean emailNotification,
+                                             @RequestParam(required = false) boolean phoneNotification) {
+
+        User user = userService.findById(userId).orElse(null);
+
+        NotificationSettings settings = user.getNotificationSettings();
+        settings.setLoginNotification(loginNotification);
+        settings.setCheckingAccountNotification(checkingAccountNotification);
+        settings.setSavingsAccountNotification(savingsAccountNotification);
+        settings.setEmailNotification(emailNotification);
+        settings.setPhoneNotification(phoneNotification);
+
+        userService.updateNotificationSettings(user);
+
+        return "redirect:/accounts/" + userId;
+    }
 
 
 

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Notification Settings</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1>Notification Settings</h1>
+
+    <form th:action="@{|/accounts/${user.id}/notifications|}" method="post">
+        <div class="form-group">
+            <h3>Notify me about:</h3>
+
+            <!-- Login Notifications -->
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="loginNotification" name="loginNotification" th:checked="${user.notificationSettings.loginNotification}">
+                <label class="form-check-label" for="loginNotification">
+                    Logins to my account
+                </label>
+            </div>
+
+            <!-- Checking Account Notifications -->
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="checkingAccountNotification" name="checkingAccountNotification" th:checked="${user.notificationSettings.checkingAccountNotification}">
+                <label class="form-check-label" for="checkingAccountNotification">
+                    Actions on my checking account
+                </label>
+            </div>
+
+            <!-- Savings Account Notifications -->
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="savingsAccountNotification" name="savingsAccountNotification" th:checked="${user.notificationSettings.savingsAccountNotification}">
+                <label class="form-check-label" for="savingsAccountNotification">
+                    Actions on my savings account
+                </label>
+            </div>
+        </div>
+
+        <h3>Notify me via:</h3>
+
+        <!-- Email Notifications -->
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="emailNotification" name="emailNotification" th:checked="${user.notificationSettings.emailNotification}">
+            <label class="form-check-label" for="emailNotification">
+                Email
+            </label>
+        </div>
+
+        <!-- Phone Notifications -->
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="phoneNotification" name="phoneNotification" th:checked="${user.notificationSettings.phoneNotification}">
+            <label class="form-check-label" for="phoneNotification">
+                Phone
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Save Settings</button>
+    </form>
+
+    <a th:href="@{|/accounts/${user.id}|}" class="btn btn-secondary mt-3">Back to Account</a>
+</div>
+
+<!-- Include Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

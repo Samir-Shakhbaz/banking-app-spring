@@ -48,7 +48,7 @@
                 <!-- Action Links: View statements and transactions -->
                 <a th:href="@{|/accounts/${account.accountNumber}/statement?period=monthly|}">Monthly Statement</a> |
                 <a th:href="@{|/accounts/${account.accountNumber}/statement?period=yearly|}">Yearly Statement</a> |
-                <a th:href="@{|/accounts/${account.id}/transactions|}">View Transactions</a>
+                <a th:href="@{|/accounts/${account.accountNumber}/transactions|}">View Transactions</a>
             </td>
         </tr>
         </tbody>

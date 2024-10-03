@@ -2,6 +2,7 @@ package com.sash.banking_app_spring.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +33,11 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "account_id")
     )
     private Set<BankingAccount> accounts = new HashSet<>();
+
+    @Getter
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "notification_settings_id", referencedColumnName = "id")
+    private NotificationSettings notificationSettings;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

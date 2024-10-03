@@ -1,9 +1,6 @@
 package com.sash.banking_app_spring.services;
 
-import com.sash.banking_app_spring.models.BankingAccount;
-import com.sash.banking_app_spring.models.CheckingAccount;
-import com.sash.banking_app_spring.models.SavingsAccount;
-import com.sash.banking_app_spring.models.User;
+import com.sash.banking_app_spring.models.*;
 import com.sash.banking_app_spring.repositories.BankingAccountRepository;
 import com.sash.banking_app_spring.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -101,6 +98,16 @@ public class UserService implements UserDetailsService {
         savingsAccount.setBalance(0.0);
         savingsAccount.setAccountNumber(generateRandomAccountNumber());
 
+        NotificationSettings notificationSettings = new NotificationSettings();
+        notificationSettings.setLoginNotification(false);
+        notificationSettings.setCheckingAccountNotification(false);
+        notificationSettings.setSavingsAccountNotification(false);
+        notificationSettings.setEmailNotification(false);
+        notificationSettings.setPhoneNotification(false);
+
+        // Set notification settings to user
+        user.setNotificationSettings(notificationSettings);
+
         bankingAccountRepository.save(checkingAccount);
         bankingAccountRepository.save(savingsAccount);
 
@@ -124,6 +131,10 @@ public class UserService implements UserDetailsService {
         newUser.getAccounts().addAll(accounts);
 
         return userRepository.save(newUser);
+    }
+
+    public void updateNotificationSettings(User user) {
+        userRepository.save(user);
     }
 
 }
