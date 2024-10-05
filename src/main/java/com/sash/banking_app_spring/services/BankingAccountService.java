@@ -21,6 +21,12 @@ public class BankingAccountService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private SMSService smsService;
+
     public List<BankingAccount> getAllAccounts() {
         return bankingAccountRepository.findAll();  // Returns all banking accounts
     }
@@ -67,21 +73,65 @@ public class BankingAccountService {
 
     public BankingAccount deposit(Long accountId, double depositAmount) {
 
+        // Find the account by ID or throw an exception if not found
         BankingAccount account = bankingAccountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found."));
 
+        // Update the account balance
         account.setBalance(account.getBalance() + depositAmount);
 
+        // Create a new transaction and associate it with the account
         Transaction transaction = new Transaction();
         transaction.setType("Deposit");
         transaction.setAmount(depositAmount);
         transaction.setDate(LocalDateTime.now());
         transaction.setBankingAccount(account);  // Set the relationship between Transaction and BankingAccount
 
+        // Add the transaction to the account's transaction history
         account.getTransactionHistory().add(transaction);
 
+        // Fetch the user associated with the account
+        User user = getUserByAccount(accountId);
+
+        // Ensure the user has NotificationSettings initialized
+        NotificationSettings notificationSettings = user.getNotificationSettings();
+        if (notificationSettings == null) {
+            // Initialize notification settings if they are null (fallback to default values)
+            notificationSettings = new NotificationSettings();
+            notificationSettings.setEmailNotification(false); // Default value
+            notificationSettings.setPhoneNotification(false); // Default value
+            user.setNotificationSettings(notificationSettings);
+            userRepository.save(user); // Save the user with initialized notification settings
+        }
+
+        // Check if email notification is enabled and send notification if it is
+        if (notificationSettings.isEmailNotification()) {
+            emailService.sendNotificationEmail(user.getEmail(),
+                    "Deposit Notification",
+                    "A deposit of $" + depositAmount + " has been made to your account."
+            );
+        }
+
+        // Check if phone notification is enabled and send notification if it is
+        if (notificationSettings.isPhoneNotification()) {
+            smsService.sendNotification(user.getPhone(),
+                    "A deposit of $" + depositAmount + " has been made to your account.");
+        }
+
+        // Save the updated account (including transaction history) and return the result
         return bankingAccountRepository.save(account);
     }
+
+
+
+    public User getUserByAccount(Long accountId) {
+        BankingAccount account = bankingAccountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found."));
+
+        return account.getUsers().stream().findFirst()
+                .orElseThrow(() -> new RuntimeException("No user associated with this account."));
+    }
+
 
     public String withdraw(Long accountId, double withdrawAmount) {
 
@@ -157,8 +207,8 @@ public class BankingAccountService {
         return statement.toString();
     }
 
-    public void lockAccount(Long accountId) {
-        Optional<BankingAccount> accountOpt = bankingAccountRepository.findById(accountId);
+    public void lockAccount(Long accountNumber) {
+        Optional<BankingAccount> accountOpt = Optional.ofNullable(bankingAccountRepository.findByAccountNumber(accountNumber));
         if (accountOpt.isPresent()) {
             BankingAccount account = accountOpt.get();
             account.setLocked(true);
@@ -169,8 +219,9 @@ public class BankingAccountService {
         }
     }
 
-    public void unlockAccount(Long accountId) {
-        Optional<BankingAccount> accountOpt = bankingAccountRepository.findById(accountId);
+
+    public void unlockAccount(Long accountNumber) {
+        Optional<BankingAccount> accountOpt = Optional.ofNullable(bankingAccountRepository.findByAccountNumber(accountNumber));
         if (accountOpt.isPresent()) {
             BankingAccount account = accountOpt.get();
             account.setLocked(false);
@@ -283,13 +334,10 @@ public class BankingAccountService {
         BankingAccount account = bankingAccountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        // Add the account to the user's set of accounts
         user.getAccounts().add(account);
 
-        // Add the user to the account's set of users (optional if bidirectional)
         account.getUsers().add(user);
 
-        // Save the updated entities
         userRepository.save(user);
         bankingAccountRepository.save(account);
     }

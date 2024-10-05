@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -40,39 +41,28 @@ public class UserController {
 //        return "redirect:/login";  // Redirect to login after user creation
 //    }
 
-        @PostMapping("/create")
-        public String createUserWithAccounts(
-                @RequestParam String username,
-                @RequestParam String password,
-                @RequestParam String role) {
+    @PostMapping("/create")
+    public String createUserWithAccounts(
+            @RequestParam String username,
+            @RequestParam String password,
+            @RequestParam String role,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phone)
+    {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setRole(role);
+        user.setEmail(email);
+        user.setPhone(phone);
 
-            User user = new User();
-            user.setUsername(username);
-            user.setPassword(password);
-            user.setRole(role);
+        user.setPasswordChangeRequired(true);  // setting the flag
 
-            userService.createUserWithAccounts(user);
+        userService.createUserWithAccounts(user);
 
-            return "redirect:/";
-        }
-
-
-    @PostMapping("/change-password")
-    public String changePassword(@RequestParam("newPassword") String newPassword,
-                                 @RequestParam("confirmPassword") String confirmPassword) {
-        if (!newPassword.equals(confirmPassword)) {
-
-            return "redirect:/change-password?error=true";
-        }
-
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        currentUser.setPassword(passwordEncoder.encode(newPassword));
-        currentUser.setPasswordChangeRequired(false);
-        userService.updateUser(currentUser.getId(), currentUser);
-
-        return "redirect:/accounts";
+        return "redirect:/";
     }
+
 
     @GetMapping("/list")
     public String listUsers(Model model) {

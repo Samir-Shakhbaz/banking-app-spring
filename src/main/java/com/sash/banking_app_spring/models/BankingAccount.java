@@ -3,10 +3,7 @@ package com.sash.banking_app_spring.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)  // here we can choose JOINED or TABLE_PER_CLASS based on design
@@ -43,5 +40,17 @@ public abstract class BankingAccount {
     @ManyToMany(mappedBy = "accounts")
     private Set<User> users = new HashSet<>();
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, accountNumber); // Exclude 'users' to avoid recursion
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof BankingAccount)) return false;
+        BankingAccount other = (BankingAccount) obj;
+        return Objects.equals(id, other.id) && Objects.equals(accountNumber, other.accountNumber); // Exclude 'users'
+    }
 
 }

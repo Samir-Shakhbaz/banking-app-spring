@@ -198,19 +198,31 @@ public class BankingAccountController {
         return "account-statement";
     }
 
+    @GetMapping("/lock-unlock")
+    public String showLockUnlockPage(Model model, Principal principal) {
+        String username = principal.getName();
+        User user = userService.findByUsername(username);
+
+        // Fetch the user's accounts
+        Set<BankingAccount> accounts = user.getAccounts();
+        model.addAttribute("accounts", accounts);
+
+        return "lock-unlock-account";
+    }
+
 
     @PostMapping("/{accountNumber}/lock")
     public String lockAccount(@PathVariable Long accountNumber, Model model) {
         bankingAccountService.lockAccount(accountNumber);
         model.addAttribute("message", "Account locked successfully.");
-        return "redirect:/accounts/" + accountNumber;
+        return "redirect:/accounts/lock-unlock";
     }
 
     @PostMapping("/{accountNumber}/unlock")
     public String unlockAccount(@PathVariable Long accountNumber, Model model) {
         bankingAccountService.unlockAccount(accountNumber);
         model.addAttribute("message", "Account unlocked successfully.");
-        return "redirect:/accounts/" + accountNumber;
+        return "redirect:/accounts/lock-unlock";
     }
 
     @PostMapping("/generate-statement")
@@ -347,7 +359,6 @@ public class BankingAccountController {
         User user = userService.findById(userId).orElse(null);
         NotificationSettings settings = user.getNotificationSettings();
 
-        // If settings are null, create new default settings
         if (settings == null) {
             settings = new NotificationSettings();
             settings.setLoginNotification(false);
@@ -365,31 +376,34 @@ public class BankingAccountController {
         return "notification-settings";
     }
 
-
-
-
     @PostMapping("/{userId}/notifications")
     public String updateNotificationSettings(@PathVariable Long userId,
-                                             @RequestParam(required = false) boolean loginNotification,
-                                             @RequestParam(required = false) boolean checkingAccountNotification,
-                                             @RequestParam(required = false) boolean savingsAccountNotification,
-                                             @RequestParam(required = false) boolean emailNotification,
-                                             @RequestParam(required = false) boolean phoneNotification) {
+                                             @RequestParam(required = false) Boolean loginNotification,
+                                             @RequestParam(required = false) Boolean checkingAccountNotification,
+                                             @RequestParam(required = false) Boolean savingsAccountNotification,
+                                             @RequestParam(required = false) Boolean emailNotification,
+                                             @RequestParam(required = false) Boolean phoneNotification) {
 
         User user = userService.findById(userId).orElse(null);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
 
         NotificationSettings settings = user.getNotificationSettings();
-        settings.setLoginNotification(loginNotification);
-        settings.setCheckingAccountNotification(checkingAccountNotification);
-        settings.setSavingsAccountNotification(savingsAccountNotification);
-        settings.setEmailNotification(emailNotification);
-        settings.setPhoneNotification(phoneNotification);
+        if (settings == null) {
+            settings = new NotificationSettings();
+            user.setNotificationSettings(settings);
+        }
+
+        settings.setLoginNotification(Boolean.TRUE.equals(loginNotification));
+        settings.setCheckingAccountNotification(Boolean.TRUE.equals(checkingAccountNotification));
+        settings.setSavingsAccountNotification(Boolean.TRUE.equals(savingsAccountNotification));
+        settings.setEmailNotification(Boolean.TRUE.equals(emailNotification));
+        settings.setPhoneNotification(Boolean.TRUE.equals(phoneNotification));
 
         userService.updateNotificationSettings(user);
 
         return "redirect:/accounts/" + userId;
     }
-
-
 
 }

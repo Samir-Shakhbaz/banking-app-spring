@@ -7,10 +7,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Data
@@ -25,6 +22,12 @@ public class User implements UserDetails {
     private String password;
     private String role;
     private boolean passwordChangeRequired;
+    @Column(nullable = true) // Optional email field
+    private String email;
+
+    @Column(nullable = true) // Optional phone field
+    private String phone;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -42,6 +45,19 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return AuthorityUtils.createAuthorityList(List.of("ROLE_" + role.toUpperCase()));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username); // Exclude 'accounts' to avoid recursion
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof User)) return false;
+        User other = (User) obj;
+        return Objects.equals(id, other.id) && Objects.equals(username, other.username); // Exclude 'accounts'
     }
 
 }

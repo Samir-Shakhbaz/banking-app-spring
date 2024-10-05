@@ -86,6 +86,22 @@ public class UserService implements UserDetailsService {
             user.setRole("USER");
         }
 
+        // Set default values for optional fields
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            user.setEmail(null); // Leave email as null if not provided
+        }
+        if (user.getPhone() == null || user.getPhone().isEmpty()) {
+            user.setPhone(null); // Leave phone as null if not provided
+        }
+
+//        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+//            throw new IllegalArgumentException("Email is required");
+//        }
+//
+//        if (user.getPhone() == null || user.getPhone().isEmpty()) {
+//            throw new IllegalArgumentException("Phone number is required");
+//        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         CheckingAccount checkingAccount = new CheckingAccount();
@@ -98,15 +114,15 @@ public class UserService implements UserDetailsService {
         savingsAccount.setBalance(0.0);
         savingsAccount.setAccountNumber(generateRandomAccountNumber());
 
-        NotificationSettings notificationSettings = new NotificationSettings();
-        notificationSettings.setLoginNotification(false);
-        notificationSettings.setCheckingAccountNotification(false);
-        notificationSettings.setSavingsAccountNotification(false);
-        notificationSettings.setEmailNotification(false);
-        notificationSettings.setPhoneNotification(false);
-
-        // Set notification settings to user
-        user.setNotificationSettings(notificationSettings);
+        if (user.getNotificationSettings() == null) {
+            NotificationSettings notificationSettings = new NotificationSettings();
+            notificationSettings.setLoginNotification(false);
+            notificationSettings.setCheckingAccountNotification(false);
+            notificationSettings.setSavingsAccountNotification(false);
+            notificationSettings.setEmailNotification(false);
+            notificationSettings.setPhoneNotification(false);
+            user.setNotificationSettings(notificationSettings);
+        }
 
         bankingAccountRepository.save(checkingAccount);
         bankingAccountRepository.save(savingsAccount);
@@ -119,7 +135,7 @@ public class UserService implements UserDetailsService {
 
     private Long generateRandomAccountNumber() {
         // generate an 8-digit random account number
-        return (long) (Math.random() * 90000000) + 10000000;  // Ensures an 8-digit number
+        return (long) (Math.random() * 90000000) + 10000000;
     }
 
     @Transactional
