@@ -5,6 +5,8 @@ import com.sash.banking_app_spring.repositories.BankingAccountRepository;
 import com.sash.banking_app_spring.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -26,6 +29,13 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Autowired
+    private EmailService emailService;
+
 
 //    @Transactional
 //    public void createUser(User user) {
@@ -152,5 +162,40 @@ public class UserService implements UserDetailsService {
     public void updateNotificationSettings(User user) {
         userRepository.save(user);
     }
+
+    public String generatePasswordResetToken(User user) {
+        // Generate a unique token
+        String token = UUID.randomUUID().toString();
+
+        user.setResetToken(token);
+        user.setResetTokenExpiration(System.currentTimeMillis() + 3600000);
+        userRepository.save(user);
+
+        return token;
+    }
+
+    public void sendPasswordResetEmail(User user, String resetToken) {
+        String resetUrl = "http://localhost:8080/change-password/reset-password?token=" + resetToken;
+
+        String subject = "Password Reset Request";
+        String body = "To reset your password, click the link below:\n" + resetUrl;
+
+        emailService.sendNotificationEmail(user.getEmail(), subject, body);
+    }
+
+    public User findByToken(String token) {
+        return userRepository.findByResetToken(token);
+    }
+
+    public User editProfile(Long id, User updatedUser) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    user.setEmail(updatedUser.getEmail());
+                    user.setPhone(updatedUser.getPhone());
+                    return userRepository.save(user);
+                })
+                .orElseThrow(() -> new RuntimeException("User not found with id " + id));
+    }
+
 
 }

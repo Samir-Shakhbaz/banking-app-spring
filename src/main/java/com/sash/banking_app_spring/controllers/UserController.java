@@ -64,17 +64,44 @@ public class UserController {
     }
 
 
+//    @GetMapping("/list")
+//    public String listUsers(Model model) {
+//        List<User> users = userService.getAllUsers();
+//        model.addAttribute("users", users);
+//        return "list-users";
+//    }
+
     @GetMapping("/list")
-    public String listUsers(Model model) {
-        List<User> users = userService.getAllUsers();
-        model.addAttribute("users", users);
-        return "list-users";
+    @ResponseBody
+    public List<User> listUsers() {
+        return userService.getAllUsers();
     }
 
     @PostMapping("/{userId}/delete")
     public String deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return "redirect:/user/list";
+    }
+
+    @GetMapping("/profile/edit")
+    public String showEditProfileForm(Model model, Principal principal) {
+        String username = principal.getName();
+        User user = userService.findByUsername(username);
+        model.addAttribute("user", user);
+        return "edit-profile";
+    }
+
+    @PostMapping("/profile/edit")
+    public String updateProfile(@ModelAttribute("user") User user, Principal principal) {
+        String currentUsername = principal.getName();
+        User currentUser = userService.findByUsername(currentUsername);
+
+        currentUser.setEmail(user.getEmail());
+        currentUser.setPhone(user.getPhone());
+
+        userService.updateUser(currentUser.getId(), currentUser);
+
+        return "redirect:/profile?success";
     }
 
 

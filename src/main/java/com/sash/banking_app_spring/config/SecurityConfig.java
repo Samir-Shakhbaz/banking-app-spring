@@ -28,23 +28,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF and CORS configuration
                 .csrf(withDefaults())
                 .cors(withDefaults())
-                // Configuring endpoint access
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/login").permitAll()
+                        .requestMatchers("/", "/login", "/accounts/forgot-password").permitAll()
                         .requestMatchers("/accounts/create","/user/create").hasRole("ADMIN")
                         .requestMatchers("/accounts/{id}","/home").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/change-password/reset-password").permitAll()
                         .anyRequest().authenticated()
                 )
 
                 .formLogin(form -> form
+                        .loginPage("/login")
                         .defaultSuccessUrl("/home", true)
                         .successHandler((request, response, authentication) -> {
 
                             User user = (User) authentication.getPrincipal();
+                            System.out.println("User: " + user.getUsername() + " Password Change Required: " + user.isPasswordChangeRequired());
+
                             if (user.isPasswordChangeRequired()) {
                                 response.sendRedirect("/change-password");
                             } else {

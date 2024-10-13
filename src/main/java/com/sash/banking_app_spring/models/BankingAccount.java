@@ -27,7 +27,7 @@ public abstract class BankingAccount {
     private double savingsPercentage;
 
 
-    @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "bankingAccount", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactionHistory = new ArrayList<>();
 
     @ManyToOne

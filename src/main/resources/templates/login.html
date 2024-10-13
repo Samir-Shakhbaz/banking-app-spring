@@ -19,7 +19,13 @@
 
     <button type="submit">Login</button>
   </form>
+
   <p th:if="${param.error}" style="color: red;">Invalid username or password</p>
+
+  <!-- Forgot Password Link -->
+  <p>
+    <a th:href="@{/accounts/forgot-password}">Forgot Password?</a>
+  </p>
 </main>
 <footer>
   <p>&copy; 2024 Banking App </p>

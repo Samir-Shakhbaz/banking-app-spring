@@ -14,21 +14,17 @@
   </header>
 
   <main>
-    <!-- User Registration Form -->
     <form th:action="@{/user/create}" method="post">
-      <!-- Username -->
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
         <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
       </div>
 
-      <!-- Password -->
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>
         <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
       </div>
 
-      <!-- Create Button -->
       <button type="submit" class="btn btn-primary">Create User & Accounts</button>
     </form>
   </main>
@@ -37,5 +33,6 @@
     <p>&copy; 2024 Banking App</p>
   </footer>
 </div>
+<div th:replace="~{test-navbar :: scripts}"></div>
 </body>
 </html>

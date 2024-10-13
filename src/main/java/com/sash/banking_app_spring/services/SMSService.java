@@ -36,8 +36,8 @@ public class SMSService {
 
         try {
             Message message = Message.creator(
-                    new PhoneNumber(toPhoneNumber),   // To phone number
-                    new PhoneNumber(fromPhoneNumber), // From Twilio number
+                    new PhoneNumber(toPhoneNumber),
+                    new PhoneNumber(fromPhoneNumber),
                     messageBody
             ).create();
 

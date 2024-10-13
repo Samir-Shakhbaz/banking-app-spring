@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Transaction History</title>
+  <div th:replace="~{test-navbar :: styles}"></div>
 </head>
 <body>
+<div th:replace="~{test-navbar :: navbar}"></div>
 <h1>Transaction History</h1>
 
-<table>
+<table class="table table-bordered">
   <thead>
   <tr>
     <th>Date</th>
@@ -27,5 +29,7 @@
 </table>
 
 <a th:href="@{|/accounts/${account.accountNumber}|}">Back to Account Details</a>
+
+<div th:replace="~{test-navbar :: scripts}"></div>
 </body>
 </html>

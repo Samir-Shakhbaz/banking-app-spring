@@ -38,7 +38,11 @@
       <td th:text="${account.balance}"></td>
       <td>
         <a th:href="@{|/accounts/${account.id}|}">View</a>
-        <a th:href="@{|/accounts/delete/${account.id}|}" th:onclick="return confirm('Are you sure?');">Delete</a>
+<!--        <a th:href="@{|/accounts/${account.id}/delete|}" th:onclick="return confirm('Are you sure?');">Delete</a>-->
+        <form th:action="@{|/accounts/${account.id}/delete|}" method="post" onsubmit="return confirm('Are you sure?');">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+
       </td>
     </tr>
     </tbody>

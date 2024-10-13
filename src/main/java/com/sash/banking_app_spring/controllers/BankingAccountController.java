@@ -406,4 +406,31 @@ public class BankingAccountController {
         return "redirect:/accounts/" + userId;
     }
 
+    @PostMapping("/{accountId}/delete")
+    public String deleteUser(@PathVariable Long accountId) {
+        bankingAccountService.deleteAccount(accountId);
+        return "redirect:/accounts";
+    }
+
+
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordForm() {
+        return "forgot-password";
+    }
+
+    @PostMapping("/forgot-password")
+    public String processForgotPassword(@RequestParam String username, Model model) {
+        User user = userService.findByUsername(username);
+        if (user == null) {
+            model.addAttribute("error", "User not found");
+            return "forgot-password";
+        }
+
+        String resetToken = userService.generatePasswordResetToken(user);
+        userService.sendPasswordResetEmail(user, resetToken);
+
+        model.addAttribute("success", "Password reset instructions sent to your email");
+        return "forgot-password";
+    }
+
 }

@@ -27,9 +27,12 @@ public class User implements UserDetails {
 
     @Column(nullable = true) // Optional phone field
     private String phone;
+    
+    private String resetToken;
+    private long resetTokenExpiration;
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(
             name = "user_accounts",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -49,7 +52,7 @@ public class User implements UserDetails {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username); // Exclude 'accounts' to avoid recursion
+        return Objects.hash(id, username); // excluding 'accounts' to avoid recursion
     }
 
     @Override
@@ -57,7 +60,7 @@ public class User implements UserDetails {
         if (this == obj) return true;
         if (!(obj instanceof User)) return false;
         User other = (User) obj;
-        return Objects.equals(id, other.id) && Objects.equals(username, other.username); // Exclude 'accounts'
+        return Objects.equals(id, other.id) && Objects.equals(username, other.username); // excluding 'accounts'
     }
 
 }
