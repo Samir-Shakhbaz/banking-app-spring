@@ -20,7 +20,7 @@ public class AdminController {
     @GetMapping("/create-admin")
     public String showCreateAdminForm(Model model) {
         model.addAttribute("user", new User());
-        return "create-admin";  // Create a form to create an admin
+        return "create-admin";
     }
 
 //    @PostMapping("/create-admin")

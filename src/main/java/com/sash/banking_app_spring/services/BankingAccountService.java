@@ -73,30 +73,38 @@ public class BankingAccountService {
 
     public BankingAccount deposit(Long accountId, double depositAmount) {
 
+        // Find the account by ID or throw an exception if not found
         BankingAccount account = bankingAccountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found."));
 
+        // Update the account balance
         account.setBalance(account.getBalance() + depositAmount);
 
+        // Create a new transaction and associate it with the account
         Transaction transaction = new Transaction();
         transaction.setType("Deposit");
         transaction.setAmount(depositAmount);
         transaction.setDate(LocalDateTime.now());
-        transaction.setBankingAccount(account);
+        transaction.setBankingAccount(account);  // Set the relationship between Transaction and BankingAccount
 
+        // Add the transaction to the account's transaction history
         account.getTransactionHistory().add(transaction);
 
+        // Fetch the user associated with the account
         User user = getUserByAccount(accountId);
 
+        // Ensure the user has NotificationSettings initialized
         NotificationSettings notificationSettings = user.getNotificationSettings();
         if (notificationSettings == null) {
+            // Initialize notification settings if they are null (fallback to default values)
             notificationSettings = new NotificationSettings();
-            notificationSettings.setEmailNotification(false);
-            notificationSettings.setPhoneNotification(false);
+            notificationSettings.setEmailNotification(false); // Default value
+            notificationSettings.setPhoneNotification(false); // Default value
             user.setNotificationSettings(notificationSettings);
-            userRepository.save(user);
+            userRepository.save(user); // Save the user with initialized notification settings
         }
 
+        // Check if email notification is enabled and send notification if it is
         if (notificationSettings.isEmailNotification()) {
             emailService.sendNotificationEmail(user.getEmail(),
                     "Deposit Notification",
@@ -104,11 +112,13 @@ public class BankingAccountService {
             );
         }
 
+        // Check if phone notification is enabled and send notification if it is
         if (notificationSettings.isPhoneNotification()) {
             smsService.sendNotification(user.getPhone(),
                     "A deposit of $" + depositAmount + " has been made to your account.");
         }
 
+        // Save the updated account (including transaction history) and return the result
         return bankingAccountRepository.save(account);
     }
 

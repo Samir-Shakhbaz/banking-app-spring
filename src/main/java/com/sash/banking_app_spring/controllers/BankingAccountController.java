@@ -225,6 +225,23 @@ public class BankingAccountController {
         return "redirect:/accounts/lock-unlock";
     }
 
+    //LOCK-UNLOCK COMBINED
+//    @PostMapping("/{accountNumber}/{action}")
+//    public String lockOrUnlockAccount(@PathVariable Long accountNumber, @PathVariable String action, Model model) {
+//        if ("lock".equalsIgnoreCase(action)) {
+//            bankingAccountService.lockAccount(accountNumber);
+//            model.addAttribute("message", "Account locked successfully.");
+//        } else if ("unlock".equalsIgnoreCase(action)) {
+//            bankingAccountService.unlockAccount(accountNumber);
+//            model.addAttribute("message", "Account unlocked successfully.");
+//        } else {
+//            model.addAttribute("error", "Invalid action.");
+//            return "redirect:/accounts/lock-unlock";
+//        }
+//        return "redirect:/accounts/lock-unlock";
+//    }
+
+
     @PostMapping("/generate-statement")
     public String generateStatement(@RequestParam Long accountId, @RequestParam String period, Model model) {
         String statement = bankingAccountService.generateStatement(accountId, period);

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 
+//@RestController
 @Controller
 @RequestMapping("/user")
 public class UserController {
@@ -25,6 +26,7 @@ public class UserController {
 
     @GetMapping("/create")
     public String showCreateUserForm(Model model) {
+
         model.addAttribute("user", new User());
         return "create-user-and-account";
     }
@@ -47,35 +49,26 @@ public class UserController {
             @RequestParam String password,
             @RequestParam String role,
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) String phone)
-    {
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setRole(role);
-        user.setEmail(email);
-        user.setPhone(phone);
+            @RequestParam(required = false) String phone) {
 
-        user.setPasswordChangeRequired(true);  // setting the flag
-
-        userService.createUserWithAccounts(user);
+        userService.createUser(username, password, role, email, phone);
 
         return "redirect:/";
     }
 
-
-//    @GetMapping("/list")
-//    public String listUsers(Model model) {
-//        List<User> users = userService.getAllUsers();
-//        model.addAttribute("users", users);
-//        return "list-users";
-//    }
-
     @GetMapping("/list")
-    @ResponseBody
-    public List<User> listUsers() {
-        return userService.getAllUsers();
+    public String listUsers(Model model) {
+        List<User> users = userService.getAllUsers();
+        model.addAttribute("users", users);
+        return "list-users";
     }
+
+
+//    //REST CONTROLLER
+//    @GetMapping(value = "/list", produces = "application/json")
+//    public List<User> listUsers() {
+//        return userService.getAllUsers();
+//    }
 
     @PostMapping("/{userId}/delete")
     public String deleteUser(@PathVariable Long userId) {

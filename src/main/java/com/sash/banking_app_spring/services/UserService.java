@@ -4,6 +4,7 @@ import com.sash.banking_app_spring.models.*;
 import com.sash.banking_app_spring.repositories.BankingAccountRepository;
 import com.sash.banking_app_spring.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -19,10 +20,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+
+    final private UserRepository userRepository;
 
     @Autowired
     private BankingAccountRepository bankingAccountRepository;
@@ -44,9 +46,15 @@ public class UserService implements UserDetailsService {
 //    }
 
     @Transactional
-    public void createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public void createUser(String username, String rawPassword, String role, String email, String phone) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setRole(role);
+        user.setEmail(email);
+        user.setPhone(phone);
         user.setPasswordChangeRequired(true);
+
         userRepository.save(user);
     }
 
