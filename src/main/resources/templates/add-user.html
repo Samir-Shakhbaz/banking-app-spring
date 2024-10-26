@@ -25,16 +25,11 @@
 
     <div class="form-group">
       <label>Select Account(s) to Add User:</label>
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="checkingAccount" name="accountSelection" th:value="${checkingAccount.id}">
-        <label class="form-check-label" for="checkingAccount">
-          Checking Account - <span th:text="${checkingAccount.accountNumber}"></span>
-        </label>
-      </div>
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="savingsAccount" name="accountSelection" th:value="${savingsAccount.id}">
-        <label class="form-check-label" for="savingsAccount">
-          Savings Account - <span th:text="${savingsAccount.accountNumber}"></span>
+      <div th:each="account : ${accounts}" class="form-check">
+        <input class="form-check-input" type="checkbox" th:id="'account-' + ${account.id}"
+               th:name="accountSelection" th:value="${account.id}">
+        <label class="form-check-label" th:for="'account-' + ${account.id}">
+          <span th:text="${account.name}"></span> - <span th:text="${account.accountNumber}"></span>
         </label>
       </div>
     </div>
@@ -42,10 +37,8 @@
     <button type="submit" class="btn btn-primary">Add User</button>
   </form>
 
-
   <a th:href="@{|/accounts/${user.id}|}">Back to Account</a>
 </div>
-
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
@@ -53,4 +46,5 @@
 
 </body>
 </html>
+
 

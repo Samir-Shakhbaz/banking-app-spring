@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -71,14 +72,14 @@ public class BankingAccountService {
 //        return "Account not found.";
 //    }
 
-    public BankingAccount deposit(Long accountId, double depositAmount) {
+    public String deposit(Long accountId, BigDecimal depositAmount) {
 
         // Find the account by ID or throw an exception if not found
         BankingAccount account = bankingAccountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found."));
 
         // Update the account balance
-        account.setBalance(account.getBalance() + depositAmount);
+        account.setBalance(account.getBalance().add(depositAmount));
 
         // Create a new transaction and associate it with the account
         Transaction transaction = new Transaction();
@@ -119,7 +120,8 @@ public class BankingAccountService {
         }
 
         // Save the updated account (including transaction history) and return the result
-        return bankingAccountRepository.save(account);
+        bankingAccountRepository.save(account);
+        return "Deposit successful!";
     }
 
 
@@ -133,13 +135,13 @@ public class BankingAccountService {
     }
 
 
-    public String withdraw(Long accountId, double withdrawAmount) {
+    public String withdraw(Long accountId, BigDecimal withdrawAmount) {
 
         BankingAccount account = bankingAccountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found."));
 
-        if (account.getBalance() >= withdrawAmount) {
-            account.setBalance(account.getBalance() - withdrawAmount);
+        if (account.getBalance().compareTo(withdrawAmount) >= 0) {
+            account.setBalance(account.getBalance().subtract(withdrawAmount));
 
 
             Transaction transaction = new Transaction();
@@ -236,8 +238,9 @@ public class BankingAccountService {
         Optional<BankingAccount> accountOpt = bankingAccountRepository.findById(accountId);
         if (accountOpt.isPresent()) {
             BankingAccount account = accountOpt.get();
-            double interest = account.getBalance() * (interestRate / 100);
-            account.setBalance(account.getBalance() + interest);
+            BigDecimal interestRateDecimal = BigDecimal.valueOf(interestRate).divide(BigDecimal.valueOf(100));
+            BigDecimal interest = account.getBalance().multiply(interestRateDecimal);
+            account.setBalance(account.getBalance().add(interest));
             account.getTransactionHistory().add(new Transaction("Interest", interest, LocalDateTime.now(), null));
             return bankingAccountRepository.save(account);
         }
@@ -258,7 +261,7 @@ public class BankingAccountService {
 
 
 
-    public CheckingAccount createCheckingAccount(String name, double balance, Long accountNumber, double overdraftLimit) {
+    public CheckingAccount createCheckingAccount(String name, BigDecimal balance, Long accountNumber, BigDecimal overdraftLimit) {
         CheckingAccount account = new CheckingAccount();
         account.setName(name);
         account.setBalance(balance);
@@ -267,7 +270,7 @@ public class BankingAccountService {
         return bankingAccountRepository.save(account);
     }
 
-    public SavingsAccount createSavingsAccount(String name, double balance, Long accountNumber, double interestRate) {
+    public SavingsAccount createSavingsAccount(String name, BigDecimal balance, Long accountNumber, double interestRate) {
         SavingsAccount account = new SavingsAccount();
         account.setName(name);
         account.setBalance(balance);
@@ -313,12 +316,12 @@ public class BankingAccountService {
         BankingAccount targetAccount = bankingAccountRepository.findById(targetAccountId)
                 .orElseThrow(() -> new RuntimeException("Target account not found"));
 
-        if (sourceAccount.getBalance() < amount) {
+        if (sourceAccount.getBalance().compareTo(BigDecimal.valueOf(amount)) < 0) {
             return "Insufficient funds in the source account";
         }
 
-        sourceAccount.setBalance(sourceAccount.getBalance() - amount);
-        targetAccount.setBalance(targetAccount.getBalance() + amount);
+        sourceAccount.setBalance(sourceAccount.getBalance().subtract(BigDecimal.valueOf(amount)));
+        targetAccount.setBalance(targetAccount.getBalance().add(BigDecimal.valueOf(amount)));
 
         bankingAccountRepository.save(sourceAccount);
         bankingAccountRepository.save(targetAccount);

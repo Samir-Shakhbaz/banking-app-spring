@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -124,12 +125,12 @@ public class UserService implements UserDetailsService {
 
         CheckingAccount checkingAccount = new CheckingAccount();
         checkingAccount.setName(user.getUsername() + " Checking Account");
-        checkingAccount.setBalance(0.0);
+        checkingAccount.setBalance(BigDecimal.valueOf(0.0));
         checkingAccount.setAccountNumber(generateRandomAccountNumber());
 
         SavingsAccount savingsAccount = new SavingsAccount();
         savingsAccount.setName(user.getUsername() + " Savings Account");
-        savingsAccount.setBalance(0.0);
+        savingsAccount.setBalance(BigDecimal.valueOf(0.0));
         savingsAccount.setAccountNumber(generateRandomAccountNumber());
 
         if (user.getNotificationSettings() == null) {
@@ -157,15 +158,23 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User addUserToExistingAccounts(User newUser, List<Long> accountIds) {
+    public User addUserToExistingAccounts(User user, List<Long> accountIds) {
+        // Only encode password if the user is newly created and password is not yet encoded
+        if (user.getId() == null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
 
-        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         List<BankingAccount> accounts = bankingAccountRepository.findAllById(accountIds);
+        for (BankingAccount account : accounts) {
+            user.getAccounts().add(account);
+            account.getUsers().add(user); // Update the reverse relationship
+            bankingAccountRepository.save(account); // Save the account to persist the changes
+        }
 
-        newUser.getAccounts().addAll(accounts);
-
-        return userRepository.save(newUser);
+        return userRepository.save(user);
     }
+
+
 
     public void updateNotificationSettings(User user) {
         userRepository.save(user);

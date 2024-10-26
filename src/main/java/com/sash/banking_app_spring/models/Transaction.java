@@ -3,6 +3,7 @@ package com.sash.banking_app_spring.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,7 +17,7 @@ public class Transaction {
 
     private String type;
 
-    private double amount;
+    private BigDecimal amount;
 
     private LocalDateTime date;
 
@@ -29,7 +30,7 @@ public class Transaction {
 
     public Transaction() {}
 
-    public Transaction(String type, double amount, LocalDateTime date, Long targetAccount) {
+    public Transaction(String type, BigDecimal amount, LocalDateTime date, Long targetAccount) {
         this.type = type;
         this.amount = amount;
         this.date = date;

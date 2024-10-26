@@ -3,6 +3,7 @@ package com.sash.banking_app_spring.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Entity
@@ -16,14 +17,14 @@ public abstract class BankingAccount {
     private Long id;
 
     private String name;
-    private double balance;
+    private BigDecimal balance = BigDecimal.ZERO;
     @Column(unique = true)
     private Long accountNumber;
     private boolean active;
     private boolean locked;
-    private double totalExpenses;
-    private double budget;
-    private double savingsBalance;
+    private BigDecimal totalExpenses;
+    private BigDecimal budget;
+    private BigDecimal savingsBalance;
     private double savingsPercentage;
 
 

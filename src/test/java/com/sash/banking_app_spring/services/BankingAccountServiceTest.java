@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
@@ -56,7 +57,7 @@ class BankingAccountServiceTest {
         // Create a mock banking account
         account = new CheckingAccount();
         account.setId(1L);
-        account.setBalance(100.0);
+        account.setBalance(BigDecimal.valueOf(100.0));
         account.setTransactionHistory(new ArrayList<>());
 
         // Add the user to the account's users set
@@ -77,14 +78,14 @@ class BankingAccountServiceTest {
         when(bankingAccountRepository.findById(1L)).thenReturn(Optional.of(account));
 
         // Perform the deposit action
-        double depositAmount = 50.0;
+        BigDecimal depositAmount = BigDecimal.valueOf(50.0);
         bankingAccountService.deposit(1L, depositAmount);
 
         // Verify that the phone notification (SMS) is sent
         verify(smsService).sendNotification(eq(user.getPhone()), anyString());
 
         // Verify that the account balance is updated correctly
-        assertEquals(150.0, account.getBalance(), "Account balance should be updated after deposit");
+        assertEquals(BigDecimal.valueOf(150.0), account.getBalance(), "Account balance should be updated after deposit");
 
         // Verify that the account is saved with the updated balance and transaction history
         verify(bankingAccountRepository).save(account);

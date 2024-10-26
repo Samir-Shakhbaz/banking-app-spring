@@ -11,11 +11,13 @@ import com.sash.banking_app_spring.services.BankingAccountService;
 import com.sash.banking_app_spring.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -167,18 +169,42 @@ public class BankingAccountController {
 
 
     @PostMapping("/{userId}/accounts/{accountId}/deposit")
-    public String deposit(@PathVariable Long userId, @PathVariable Long accountId, @RequestParam double amount) {
-        bankingAccountService.deposit(accountId, amount);
-        // Redirect back to the user's accounts page
+    public String deposit(@PathVariable Long userId, @PathVariable Long accountId, @RequestParam BigDecimal amount, Model model) {
+        BankingAccount account = bankingAccountRepository.findById(accountId).orElse(null);
+        if (account == null) {
+            model.addAttribute("error", "Account not found");
+            return "redirect:/accounts/" + userId;
+        }
+
+        if (account.isLocked()) {
+            model.addAttribute("error", "Cannot deposit. The account is locked.");
+            return "redirect:/accounts/" + userId;
+        }
+
+        String result = bankingAccountService.deposit(accountId, amount);
+        model.addAttribute("message", result);
         return "redirect:/accounts/" + userId;
     }
 
 
     @PostMapping("/{userId}/accounts/{accountId}/withdraw")
-    public String withdraw(@PathVariable Long userId, @PathVariable Long accountId, @RequestParam double amount) {
-        bankingAccountService.withdraw(accountId, amount);
+    public String withdraw(@PathVariable Long userId, @PathVariable Long accountId, @RequestParam BigDecimal amount, Model model) {
+        BankingAccount account = bankingAccountRepository.findById(accountId).orElse(null);
+        if (account == null) {
+            model.addAttribute("error", "Account not found");
+            return "redirect:/accounts/" + userId;
+        }
+
+        if (account.isLocked()) {
+            model.addAttribute("error", "Cannot withdraw. The account is locked.");
+            return "redirect:/accounts/" + userId;
+        }
+
+        String result = bankingAccountService.withdraw(accountId, amount);
+        model.addAttribute("message", result);
         return "redirect:/accounts/" + userId;
     }
+
 
 
     @GetMapping("/{accountNumber}/statement")
@@ -322,60 +348,74 @@ public class BankingAccountController {
                            @RequestParam Long targetAccountId,
                            @RequestParam double amount, Model model) {
 
+        BankingAccount sourceAccount = bankingAccountRepository.findById(sourceAccountId).orElse(null);
+        BankingAccount targetAccount = bankingAccountRepository.findById(targetAccountId).orElse(null);
+
+        if (sourceAccount == null || targetAccount == null) {
+            model.addAttribute("error", "Source or target account not found");
+            return "redirect:/accounts/" + userId;
+        }
+
+        if (sourceAccount.isLocked()) {
+            model.addAttribute("error", "Cannot transfer from source account. The account is locked.");
+            return "redirect:/accounts/" + userId;
+        }
+
+        if (targetAccount.isLocked()) {
+            model.addAttribute("error", "Cannot transfer to target account. The account is locked.");
+            return "redirect:/accounts/" + userId;
+        }
+
         String result = bankingAccountService.transfer(sourceAccountId, targetAccountId, amount);
-
-
         model.addAttribute("message", result);
         return "redirect:/accounts/" + userId;
     }
 
     @GetMapping("/{userId}/add-user")
-    public String showAddUserForm(@PathVariable Long userId, Model model) {
-        User user = userRepository.findById(userId).orElse(null);
+    public String showAddUserForm(@PathVariable Long userId, Principal principal, Model model) {
+        User loggedInUser = userRepository.findByUsername(principal.getName());
 
-        if (user == null || user.getAccounts().isEmpty()) {
-            model.addAttribute("error", "User or Accounts not found.");
-            return "redirect:/accounts/" + userId;
+        if (loggedInUser == null || loggedInUser.getAccounts().isEmpty()) {
+            model.addAttribute("error", "No accounts found for the logged-in user.");
+            return "redirect:/accounts";
         }
 
-        BankingAccount checkingAccount = user.getAccounts().stream()
-                .filter(account -> account instanceof CheckingAccount)
-                .findFirst()
-                .orElse(null);
+        // Get the user who will be added to the selected accounts
+        User userToAdd = userRepository.findById(userId).orElse(null);
+        if (userToAdd == null) {
+            model.addAttribute("error", "User to be added not found.");
+            return "redirect:/accounts";
+        }
 
-        BankingAccount savingsAccount = user.getAccounts().stream()
-                .filter(account -> account instanceof SavingsAccount)
-                .findFirst()
-                .orElse(null);
-
-        model.addAttribute("user", user);
-        model.addAttribute("checkingAccount", checkingAccount);
-        model.addAttribute("savingsAccount", savingsAccount);
+        model.addAttribute("user", userToAdd);
+        model.addAttribute("accounts", loggedInUser.getAccounts());
 
         return "add-user";
     }
+
 
     @PostMapping("/{userId}/add-user")
     public String addUserToExistingAccounts(@RequestParam String newUsername,
                                             @RequestParam String newPassword,
                                             @RequestParam List<Long> accountSelection,
                                             @PathVariable Long userId, Model model) {
-
-        User newUser = new User();
-        newUser.setUsername(newUsername);
-        newUser.setPassword(newPassword);
-        newUser.setRole("USER");
-
-        userService.addUserToExistingAccounts(newUser, accountSelection);
-
+        User existingUser = userService.findByUsername(newUsername);
+        User userToAdd;
+        if (existingUser != null) {
+            userToAdd = existingUser;
+        } else {
+            userService.createUser(newUsername, newPassword, "USER", null, null);
+            userToAdd = userService.findByUsername(newUsername);
+        }
+        userService.addUserToExistingAccounts(userToAdd, accountSelection);
         return "redirect:/accounts/" + userId;
     }
+
 
     @GetMapping("/{userId}/notifications")
     public String showNotificationSettings(@PathVariable Long userId, Model model) {
         User user = userService.findById(userId).orElse(null);
         NotificationSettings settings = user.getNotificationSettings();
-
         if (settings == null) {
             settings = new NotificationSettings();
             settings.setLoginNotification(false);
@@ -384,14 +424,13 @@ public class BankingAccountController {
             settings.setEmailNotification(false);
             settings.setPhoneNotification(false);
             user.setNotificationSettings(settings);
-            userService.updateNotificationSettings(user); // Save the new settings
+            userService.updateNotificationSettings(user);
         }
-
         model.addAttribute("user", user);
         model.addAttribute("settings", settings);
-
         return "notification-settings";
     }
+
 
     @PostMapping("/{userId}/notifications")
     public String updateNotificationSettings(@PathVariable Long userId,
