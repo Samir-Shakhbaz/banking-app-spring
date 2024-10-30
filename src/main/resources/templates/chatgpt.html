@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatGPT Service</title>
+    <div th:replace="~{test-navbar :: styles}"></div>
+</head>
+<body>
+
+<div th:replace="~{test-navbar.html :: navbar}"></div>
+
+<div class="container" style="margin-top: 80px;"> <!-- Increased margin-top -->
+    <h4>How can we help you?</h4>
+    <form th:action="@{/askgpt}" method="post">
+        <div class="form-group">
+            <label for="content">Enter Your Request:</label>
+            <input type="text" id="content" name="content" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Enter</button>
+    </form>
+
+    <section style="margin-top: 20px;">
+        <h3>Response:</h3>
+        <div th:text="${response}"></div>
+    </section>
+</div>
+
+<footer>
+    <p>&copy; 2024 Banking Application</p>
+</footer>
+
+<div th:replace="~{test-navbar :: scripts}"></div>
+
+</body>
+</html>
