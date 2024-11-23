@@ -67,14 +67,19 @@ public class SecurityConfig {
 
 //    @Bean
 //    public UserDetailsService userDetailsService() {
-//        UserDetails admin = User.builder()
-//                .username("admin")
-//                .password(passwordEncoder().encode("admin"))
-//                .roles("ADMIN")
-//                .build();
+//        // Create an admin user with the username "admin" and the password "admin"
+//        org.springframework.security.core.userdetails.UserDetails admin =
+//                org.springframework.security.core.userdetails.User
+//                        .builder()
+//                        .username("admin")
+//                        .password(passwordEncoder().encode("admin")) // Use BCrypt to encode the password
+//                        .roles("ADMIN") // Assign the "ADMIN" role
+//                        .build();
 //
+//        // In-memory user details manager with the admin user
 //        return new InMemoryUserDetailsManager(admin);
 //    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
