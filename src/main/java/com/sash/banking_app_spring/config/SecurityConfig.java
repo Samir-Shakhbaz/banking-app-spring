@@ -29,8 +29,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(withDefaults())
-                .cors(withDefaults())
+                .csrf(csrf -> csrf.disable()) // Disable CSRF
+//                .csrf(withDefaults())
+//                .cors(withDefaults())
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/login", "/accounts/forgot-password").permitAll()
                         .requestMatchers("/accounts/create","/user/create").hasRole("ADMIN")
