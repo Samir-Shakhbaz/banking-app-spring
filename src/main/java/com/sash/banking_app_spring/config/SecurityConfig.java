@@ -33,7 +33,7 @@ public class SecurityConfig {
 //                .csrf(withDefaults())
 //                .cors(withDefaults())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/login", "/accounts/forgot-password").permitAll()
+                        .requestMatchers("/", "/login", "/accounts/forgot-password", "/friendica/**", "/api/discord/**").permitAll()
                         .requestMatchers("/accounts/create","/user/create").hasRole("ADMIN")
                         .requestMatchers("/accounts/{id}","/home").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/error").permitAll()
